@@ -40,12 +40,14 @@
   function profileBlock(name, title, profile) {
     const providers = getService().getProviderDefinitions();
     const provider = providers[profile.provider] || providers.openai;
+    const isMainApi = profile.provider === "sillytavern";
     const customUrlStyle = profile.provider === "custom" ? "" : "display:none";
+    const independentFieldStyle = isMainApi ? "display:none" : "";
     return `
       <div class="idol-preset-block idol-api-profile" data-profile="${name}">
         <h4>${title}</h4>
         <div class="idol-form-row">
-          <div class="idol-form-group">
+          <div class="idol-form-group idol-independent-api-field" style="${independentFieldStyle}">
             <label>API Provider</label>
             <select id="idol-${name}-provider" class="idol-model-select" onchange="window.IdolSettings.onProviderChange('${name}')">
               ${getProviderOptions(profile.provider)}
@@ -59,15 +61,15 @@
             <input type="text" id="idol-${name}-model" value="${esc(profile.model || provider.defaultModel || "")}" placeholder="model id">
           </div>
         </div>
-        <div class="idol-form-group idol-custom-url-row" id="idol-${name}-custom-url-row" style="${customUrlStyle}">
+        <div class="idol-form-group idol-custom-url-row idol-independent-api-field" id="idol-${name}-custom-url-row" style="${isMainApi ? "display:none" : customUrlStyle}">
           <label>OpenAI-compatible API 地址</label>
           <input type="text" id="idol-${name}-url" value="${esc(profile.url || "")}" placeholder="https://api.example.com/v1">
         </div>
-        <div class="idol-form-group">
+        <div class="idol-form-group idol-independent-api-field" style="${independentFieldStyle}">
           <label>API 密钥</label>
           <input type="password" id="idol-${name}-key" value="${esc(profile.key || "")}" placeholder="${esc(provider.keyPlaceholder || "sk-...")}">
         </div>
-        <div class="idol-form-row">
+        <div class="idol-form-row idol-independent-api-field" style="${independentFieldStyle}">
           <div class="idol-form-group">
             <label>Temperature</label>
             <input type="number" id="idol-${name}-temperature" value="${esc(profile.temperature ?? 0.8)}" min="0" max="2" step="0.1">
@@ -76,6 +78,9 @@
             <label>Max Tokens</label>
             <input type="number" id="idol-${name}-tokens" value="${esc(profile.max_tokens ?? 3000)}" min="100" max="16000" step="100">
           </div>
+        </div>
+        <div class="idol-form-group idol-main-api-note" style="${isMainApi ? "" : "display:none"}">
+          <small>将直接使用 SillyTavern 当前主 API / 当前模型，不需要填写独立 API 地址或密钥。</small>
         </div>
       </div>
     `;
@@ -199,11 +204,21 @@
     const input = document.getElementById(`idol-${name}-model`);
     const keyInput = document.getElementById(`idol-${name}-key`);
     const urlRow = document.getElementById(`idol-${name}-custom-url-row`);
+    const block = document.querySelector(`.idol-api-profile[data-profile="${name}"]`);
+    const isMainApi = providerId === "sillytavern";
 
     select.innerHTML = getModelOptions(providerId, provider?.defaultModel || "");
     input.value = provider?.defaultModel || "";
     keyInput.placeholder = provider?.keyPlaceholder || "sk-...";
-    if (urlRow) urlRow.style.display = providerId === "custom" ? "" : "none";
+    if (urlRow) urlRow.style.display = providerId === "custom" && !isMainApi ? "" : "none";
+    if (block) {
+      block.querySelectorAll(".idol-independent-api-field").forEach((el) => {
+        el.style.display = isMainApi ? "none" : "";
+      });
+      block.querySelectorAll(".idol-main-api-note").forEach((el) => {
+        el.style.display = isMainApi ? "" : "none";
+      });
+    }
   }
 
   function onModelSelect(name) {

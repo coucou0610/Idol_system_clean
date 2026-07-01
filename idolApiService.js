@@ -16,6 +16,14 @@
   const modelOption = (value, label = value) => Object.freeze({ value, label });
 
   const PROVIDERS = Object.freeze({
+    sillytavern: Object.freeze({
+      id: "sillytavern",
+      label: "SillyTavern Main API",
+      defaultModel: "",
+      models: Object.freeze([modelOption("", "Use current SillyTavern model")]),
+      endpoint: "",
+      keyPlaceholder: "",
+    }),
     openai: Object.freeze({
       id: "openai",
       label: "OpenAI",
@@ -130,7 +138,7 @@
   const normalizeModelId = (providerId, model) => {
     const provider = PROVIDERS[normalizeProviderId(providerId)];
     const value = `${model || ""}`.trim();
-    if (provider.id === "custom") return value;
+    if (provider.id === "custom" || provider.id === "sillytavern") return value;
     return provider.models.some((item) => item.value === value) ? value : provider.defaultModel;
   };
 
@@ -309,6 +317,7 @@
   }
 
   function hasUsableProfile(profile) {
+    if (profile?.provider === "sillytavern") return true;
     return Boolean(profile?.provider && PROVIDERS[profile.provider] && profile.key && (profile.provider !== "custom" || profile.url));
   }
 
@@ -465,6 +474,50 @@
     return createChatCompletionsRequest(provider, profile, messages);
   }
 
+  async function callSillyTavernMainApi(messages) {
+    const context = window.SillyTavern?.getContext?.();
+    if (!context) {
+      throw new Error("SillyTavern context is not available.");
+    }
+
+    const prompt = composeSinglePrompt(messages);
+    const normalizeGenerated = (value) => {
+      if (typeof value === "string") return value;
+      if (value?.message) return value.message;
+      if (value?.content) return value.content;
+      if (value?.text) return value.text;
+      if (value?.mes) return value.mes;
+      return "";
+    };
+
+    const attempts = [];
+    if (typeof context.generateRaw === "function") {
+      attempts.push(() => context.generateRaw(prompt, null, false, true));
+      attempts.push(() => context.generateRaw(prompt, "", false, true));
+      attempts.push(() => context.generateRaw(prompt));
+    }
+    if (typeof context.generateQuietPrompt === "function") {
+      attempts.push(() => context.generateQuietPrompt(prompt, false, false));
+      attempts.push(() => context.generateQuietPrompt(prompt));
+    }
+
+    if (!attempts.length) {
+      throw new Error("This SillyTavern version does not expose generateRaw or generateQuietPrompt.");
+    }
+
+    let lastError = null;
+    for (const attempt of attempts) {
+      try {
+        const text = normalizeGenerated(await attempt());
+        if (text) return text;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError || new Error("SillyTavern main API returned empty content.");
+  }
+
   async function parseResponse(response, providerId) {
     const data = await response.json();
     if (providerId === "openai") {
@@ -508,6 +561,11 @@
 
     activeController = new AbortController();
     try {
+      if (profile.provider === "sillytavern") {
+        const content = await callSillyTavernMainApi(messages);
+        return { success: true, content, type };
+      }
+
       const request = createRequest(profile, messages);
       request.init.signal = activeController.signal;
       const response = await fetch(request.url, request.init);

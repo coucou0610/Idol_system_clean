@@ -48,17 +48,68 @@ console.log("🎵 [ST Music] 脚本文件已加载 (Client Mode)");
             return `${clean}/chat/completions`;
         }
 
+
+        async function callSillyTavernMainApi(messages) {
+            const context = window.SillyTavern?.getContext?.();
+            if (!context) throw new Error("SillyTavern context is not available.");
+
+            const prompt = messages.map((message) => {
+                const label = message.role === "system" ? "System" : message.role === "assistant" ? "Assistant" : "User";
+                return `${label}:\n${message.content || ""}`;
+            }).join("\n\n");
+
+            const normalizeGenerated = (value) => {
+                if (typeof value === "string") return value;
+                if (value?.message) return value.message;
+                if (value?.content) return value.content;
+                if (value?.text) return value.text;
+                if (value?.mes) return value.mes;
+                return "";
+            };
+
+            const attempts = [];
+            if (typeof context.generateRaw === "function") {
+                attempts.push(() => context.generateRaw(prompt, null, false, true));
+                attempts.push(() => context.generateRaw(prompt, "", false, true));
+                attempts.push(() => context.generateRaw(prompt));
+            }
+            if (typeof context.generateQuietPrompt === "function") {
+                attempts.push(() => context.generateQuietPrompt(prompt, false, false));
+                attempts.push(() => context.generateQuietPrompt(prompt));
+            }
+            if (!attempts.length) throw new Error("This SillyTavern version does not expose generateRaw or generateQuietPrompt.");
+
+            let lastError = null;
+            for (const attempt of attempts) {
+                try {
+                    const text = normalizeGenerated(await attempt());
+                    if (text) return text;
+                } catch (error) {
+                    lastError = error;
+                }
+            }
+            throw lastError || new Error("SillyTavern main API returned empty content.");
+        }
+
         async function callMusicNoteApi(promptText) {
             const config = getApiConfig();
-            if (!config.url || !config.key || !config.model) {
-                return { success: false, error: "请先在偶像系统的插件设置中配置 API 地址、密钥和模型。" };
-            }
-
             const messages = [
                 { role: "system", content: systemPrompt },
                 ...getChatContext(getContextCount()),
                 { role: "user", content: promptText },
             ];
+
+            if (config.provider === "sillytavern") {
+                try {
+                    return { success: true, content: await callSillyTavernMainApi(messages) };
+                } catch (error) {
+                    return { success: false, error: error.message || "SillyTavern main API failed." };
+                }
+            }
+
+            if (!config.url || !config.key || !config.model) {
+                return { success: false, error: "请先在插件设置中配置 API，或选择 SillyTavern Main API。" };
+            }
 
             currentAbortController = new AbortController();
             try {
