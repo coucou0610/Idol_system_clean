@@ -11,7 +11,7 @@
 1. 打开 SillyTavern，进入「扩展程序」→「安装扩展」
 2. 输入仓库地址：
    ```
-   https://github.com/coucou0610/Idol-system
+   https://github.com/coucou0610/Idol_system_clean
    ```
 3. 安装完成后刷新页面，点击扩展图标即可打开
 
