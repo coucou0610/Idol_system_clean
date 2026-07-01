@@ -76,11 +76,12 @@
     function loadExternalStyles() {
         ["ApiSetting.css", "music.css"].forEach((file) => {
             document
-                .querySelectorAll(`link[href*="${file}"]`)
+                .querySelectorAll(`link[data-idol-system-css="${file}"]`)
                 .forEach((el) => el.remove());
             extensionPathCandidates.forEach((basePath) => {
                 const link = document.createElement("link");
                 link.rel = "stylesheet";
+                link.dataset.idolSystemCss = file;
                 link.href = `${basePath}/${file}?v=${Date.now()}`;
                 document.head.appendChild(link);
             });
@@ -3557,13 +3558,14 @@
             .querySelectorAll("#cte-idol-map-panel, #cte-idol-toggle-btn")
             .forEach((el) => el.remove());
         document
-            .querySelectorAll('link[href*="style.css"]')
+            .querySelectorAll('link[data-idol-system-css="style.css"]')
             .forEach((el) => el.remove());
 
         const timestamp = Date.now();
         extensionPathCandidates.forEach((basePath) => {
             const link = document.createElement("link");
             link.rel = "stylesheet";
+            link.dataset.idolSystemCss = "style.css";
             link.href = `${basePath}/style.css?v=${timestamp}`;
             document.head.appendChild(link);
         });
