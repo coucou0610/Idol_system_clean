@@ -1,0 +1,213 @@
+<!-- 视图切换容器 -->
+<div id="cte-idol-view-map" class="cte-idol-view active">
+    <div class="cte-idol-wrapper">
+        <h1>京港市地图 - 档案模式</h1>
+        <h2>双击标签查看详情，长按拖拽标签移动</h2>
+
+        <div class="cte-idol-controls-bar">
+            <!-- [原有功能保持] -->
+            <button class="cte-idol-btn" onclick="window.CTEIdolManager.switchView('national-map')">🗺️ 前往国家地图</button>
+            <span style="border-right: 1px solid #444; margin: 0 10px; height: 15px;"></span>
+            <span>更换背景：</span>
+            <button class="cte-idol-btn" onclick="document.getElementById('cte-idol-bg-upload').click()">📂 选择图片...</button>
+            <input type="file" id="cte-idol-bg-upload" accept="image/*" style="display:none;" onchange="window.CTEIdolManager.changeBackground(this)">
+            <span style="margin-left:auto; font-size: 12px; color: #888;">提示：坐标位置会自动保存</span>
+        </div>
+
+        <div class="cte-idol-map-container" id="cte-idol-map-container">
+            <div class="cte-idol-location" id="cte-idol-loc-gov" style="top: 60%; left: 50%;" data-popup="cte-idol-gov-popup"><span class="label">京港市政府</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-villa" style="top: 15%; left: 25%;" data-popup="cte-idol-villa-popup"><span class="label">私人别墅</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-dorm" style="top: 15%; left: 50%;" data-popup="cte-idol-dorm-popup"><span class="label">IDO-L PARK</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-PrivateClub" style="top: 15%; left: 75%;" data-popup="cte-idol-PrivateClub-popup"><span class="label">私人会所</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-airport" style="top: 35%; left: 85%;" data-popup="cte-idol-airport-popup"><span class="label">机场</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-port" style="top: 65%; left: 85%;" data-popup="cte-idol-port-popup"><span class="label">港口</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-office4" style="top: 25%; left: 15%;" data-popup="cte-idol-office4-popup"><span class="label">隆桑集团</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-office3" style="top: 35%; left: 10%;" data-popup="cte-idol-office3-popup"><span class="label">盛华集团</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-office" style="top: 60%; left: 15%;" data-popup="cte-idol-office-popup"><span class="label">森云制药<span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-TVstation" style="top: 65%; left: 20%;" data-popup="cte-idol-TVstation-popup"><span class="label">京港电视台</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-office2" style="top: 70%; left: 15%;" data-popup="cte-idol-office2-popup"><span class="label">万城娱乐</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-highschool" style="top: 85%; left: 30%;" data-popup="cte-idol-highschool-popup"><span class="label">京港第三高中</span></div>
+            <div class="cte-idol-location" id="cte-idol-loc-other-places" style="top: 85%; left: 85%;" data-popup="cte-idol-other-places-popup"><span class="label">其他地点</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- [原有] 国家地图视图 -->
+<div id="cte-idol-view-national-map" class="cte-idol-view">
+    <div class="cte-idol-wrapper" style="width: 95%;">
+        <h1>权贵之心：国家战略地图</h1>
+        <p style="font-family: 'Zhi Mang Xing', cursive; color: #a0a0a0; margin-top: 0px; letter-spacing: 1px; font-size: 14px;">一张错综复杂的权力地图，一场没有硝烟的资本战争</p>
+
+        <div class="cte-idol-controls-bar" style="justify-content: center;">
+             <button class="cte-idol-btn" onclick="window.CTEIdolManager.switchView('map')">↩️ 返回京港市</button>
+        </div>
+
+        <!-- 国家地图容器 -->
+        <div class="cte-idol-national-map-container" id="cte-idol-national-game-map">
+            <!-- 城市将由 JS 注入 -->
+        </div>
+
+        <div class="cte-idol-national-info-panel">
+            <div id="cte-idol-national-info-content">
+                <h2><i class="fa-solid fa-map-location-dot"></i> 战略情报中心</h2>
+                <p>请点击地图上的城市图标以获取详细情报...</p>
+                <p style="font-size: 12px; color: #888; margin-top: 10px;">提示：点击“京港”图标可直接返回市内地图。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- [原有] 行程表视图 -->
+<div id="cte-idol-view-schedule" class="cte-idol-view">
+    <div class="cte-idol-wrapper">
+        <h1>当前日程安排</h1>
+        <h2 id="cte-idol-schedule-status">正在读取最新状态...</h2>
+
+        <div class="cte-idol-controls-bar">
+            <button class="cte-idol-btn" onclick="window.CTEIdolManager.refreshSchedule()">🔄 刷新日程 (读取 status_bar / notice_panel)</button>
+        </div>
+        <div id="cte-idol-schedule-datetime" style="text-align:center; font-size:13px; color:#c5a065; margin: -8px 0 16px 0; letter-spacing:0.05em;"></div>
+
+        <!-- 并排：已接通告 + 本周行程表 -->
+        <div class="cte-idol-notice-panel-row">
+            <!-- 已接通告 -->
+            <div id="cte-idol-notices-container" style="display:none; flex:1.2; min-width:0; display:flex; flex-direction:column;">
+                <h3 style="font-family:'Noto Serif SC',serif; font-size:14px; color:#c5a065; border-bottom:1px solid rgba(197,160,101,0.3); padding-bottom:6px; margin-bottom:12px;">
+                    <i class="fa-solid fa-file-contract" style="margin-right:6px;"></i>已接通告
+                </h3>
+                <div id="cte-idol-notices-list" style="flex:1;"></div>
+            </div>
+
+            <!-- 本周行程表 -->
+            <div id="cte-idol-weekly-container" style="display:none; flex:1;">
+                <h3 style="font-family:'Noto Serif SC',serif; font-size:14px; color:#c5a065; border-bottom:1px solid rgba(197,160,101,0.3); padding-bottom:6px; margin-bottom:12px;">
+                    <i class="fa-solid fa-calendar-week" style="margin-right:6px;"></i>本周行程表
+                </h3>
+                <div id="cte-idol-weekly-list"></div>
+            </div>
+        </div>
+
+        <!-- 今日行程时间轴 -->
+        <div id="cte-idol-timeline-container" class="cte-idol-timeline-container">
+            <p style="text-align:center; color:#666; margin-top:50px;">暂无行程数据，请确保聊天记录中包含 &lt;notice_panel&gt; 或 &lt;status_bar&gt; 标签。</p>
+        </div>
+    </div>
+</div>
+
+<!-- [新增] 偶像事务所 RPG 管理终端视图 -->
+<!-- manager view已合并到左侧导航 -->
+
+<!-- 通告确认弹窗 -->
+<div id="cte-agency-confirm-modal" class="cte-agency-modal">
+    <div class="cte-agency-modal-box">
+        <div class="cte-agency-modal-title">确认接取通告</div>
+        <div class="cte-confirm-content">
+            <div class="cte-confirm-row">
+                <span class="cte-confirm-label">通告名称</span>
+                <span id="cte-confirm-name" class="cte-confirm-value"></span>
+            </div>
+            <div class="cte-confirm-row">
+                <span class="cte-confirm-label">公司</span>
+                <span id="cte-confirm-company" class="cte-confirm-value"></span>
+            </div>
+            <div id="cte-confirm-desc-area" style="display:none; padding:10px 12px; background:#f9f5f0; border-left:3px solid #c8a87a; border-radius:4px; font-size:12px; color:#555; line-height:1.8; max-height:160px; overflow-y:auto; margin-bottom:8px;">
+                <div id="cte-confirm-desc"></div>
+            </div>
+            <div class="cte-confirm-row">
+                <span class="cte-confirm-label">酬劳</span>
+                <span id="cte-confirm-pay" class="cte-confirm-value cte-confirm-pay"></span>
+            </div>
+            <div class="cte-confirm-row">
+                <span class="cte-confirm-label">拍摄周期</span>
+                <span id="cte-confirm-duration" class="cte-confirm-value"></span>
+            </div>
+            <div class="cte-confirm-row">
+                <span class="cte-confirm-label">截止日期</span>
+                <span id="cte-confirm-deadline" class="cte-confirm-value"></span>
+            </div>
+        </div>
+        <div class="cte-confirm-actions">
+            <button class="cte-agency-select-btn cte-confirm-yes" onclick="window.CTEIdolManager.Contracts.confirmSign()">✓ 接取通告</button>
+            <button class="cte-agency-select-btn cte-confirm-no" onclick="window.CTEIdolManager.Contracts.closeModal()">取消</button>
+        </div>
+    </div>
+</div>
+
+<!-- 遮罩层 -->
+<div class="cte-idol-popup-overlay" id="cte-idol-overlay" onclick="window.CTEIdolManager.closeAllPopups()"></div>
+
+<!-- 出行菜单 -->
+<div id="cte-idol-travel-menu-overlay" onclick="if(event.target === this) window.CTEIdolManager.closeTravelMenu()">
+    <div class="cte-idol-travel-menu-box">
+        <span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeTravelMenu()">&times;</span>
+        <div id="cte-idol-travel-title" style="color:#e0c5a1; margin-bottom:20px;">前往目的地</div>
+        <div id="cte-idol-travel-content" class="cte-idol-travel-options"></div>
+    </div>
+</div>
+
+<!-- 参与者选择弹窗 -->
+<div id="cte-idol-participant-popup" class="cte-idol-popup" style="max-width: 400px;">
+    <span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span>
+    <h3>👥 选择参与人员</h3>
+    <p style="font-size:12px; color:#888; margin-bottom:10px;">请勾选参与此行程的成员：</p>
+
+    <div id="cte-idol-participant-list" class="cte-idol-participant-grid">
+        <!-- JS 动态生成复选框 -->
+    </div>
+
+    <div style="margin-top:15px; border-top:1px solid #444; padding-top:10px;">
+        <p style="font-size:12px; color:#aaa; margin-bottom:5px;">其他人员 (选填):</p>
+        <input type="text" id="cte-idol-participant-custom" class="cte-idol-travel-input" placeholder="输入其他名字..." style="width:90%;">
+    </div>
+
+    <div style="text-align:center; margin-top:15px; display:flex; gap:10px; justify-content:center;">
+        <button class="cte-idol-btn" onclick="window.CTEIdolManager.proceedToLocationSelection()" style="background:#b38b59; color:#1a1a1a;">📍 选择地点</button>
+        <button class="cte-idol-btn" onclick="window.CTEIdolManager.closeAllPopups()" style="border-color:#666; color:#888;">取消</button>
+    </div>
+</div>
+
+<!-- 自定义地点弹窗 -->
+<div id="cte-idol-other-places-popup" class="cte-idol-popup">
+    <span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span>
+    <h3>🗺️ 自定义目的地</h3>
+    <p>请输入您想前往的任意地点：</p>
+    <div style="text-align: center;">
+        <input type="text" id="cte-idol-custom-destination-input" class="cte-idol-travel-input" style="width: 90%; margin-top:10px;" placeholder="例如：海边">
+        <button class="cte-idol-btn" onclick="window.CTEIdolManager.goToCustomDestination()">🚀 前往</button>
+    </div>
+</div>
+
+<!-- 宿舍弹窗 -->
+<div id="cte-idol-dorm-popup" class="cte-idol-popup">
+    <span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span>
+    <h3>🏠 IDO-L PARK</h3>
+    <p>坐落在北区别墅区中的 IDO-L PARK，安保和私密性都是顶级。</p>
+    <img src="https://files.catbox.moe/h67i5g.png" class="cte-idol-popup-image">
+    <div style="text-align: center;">
+        <button class="cte-idol-btn" onclick="window.CTEIdolManager.showPopup('cte-idol-dorm-detail-popup')">🚪 宿舍内部</button>
+        <button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('IDO-L PARK')">🚀 前往</button>
+    </div>
+</div>
+
+<!-- 宿舍详情 -->
+<div id="cte-idol-dorm-detail-popup" class="cte-idol-popup">
+    <span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span>
+    <h3>🛋️ 宿舍内部</h3>
+    <img src="https://files.catbox.moe/pf282r.png" class="cte-idol-interior-image">
+    <div style="text-align:center">
+        <button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('IDO-L PARK')">🚀 前往</button>
+    </div>
+</div>
+
+<!-- 其他地点 -->
+<div id="cte-idol-office-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>🏢 森云制药</h3><p>主营药物研发、生产和销售的家族企业。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('森云制药')">🚀 前往</button></div></div>
+<div id="cte-idol-villa-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>🏰 私人别墅</h3><p>位于京港北区的一栋独栋别墅。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('私人别墅')">🚀 前往</button></div></div>
+<div id="cte-idol-office2-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>☕ 万城娱乐</h3><p>国内最大的娱乐产业集团之一。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('万城娱乐')">🚀 前往</button></div></div>
+<div id="cte-idol-office3-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>🏢 盛华集团</h3><p>老牌实业集团，在本地拥有深厚根基。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('盛华集团')">🚀 前往</button></div></div>
+<div id="cte-idol-office4-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>🏢 隆桑集团</h3><p>京港市的新兴科技巨头。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('隆桑集团')">🚀 前往</button></div></div>
+<div id="cte-idol-highschool-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>🏫 京港第三高中</h3><p>京港市著名的重点高中。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('京港第三高中')">🚀 前往</button></div></div>
+<div id="cte-idol-gov-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>🏛️ 京港市政府</h3><p>城市行政中心。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('京港市政府')">🚀 前往</button></div></div>
+<div id="cte-idol-PrivateClub-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>🍷 私人会所</h3><p>仅限会员进入的高级会所，隐秘性极高。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('私人会所')">🚀 前往</button></div></div>
+<div id="cte-idol-TVstation-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>📺 京港电视台</h3><p>城市媒体中心，众多节目的录制现场。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('京港电视台')">🚀 前往</button></div></div>
+<div id="cte-idol-airport-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>✈️ 机场</h3><p>连接京港与世界的交通枢纽。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('机场')">🚀 前往</button></div></div>
+<div id="cte-idol-port-popup" class="cte-idol-popup"><span class="cte-idol-close-btn" onclick="window.CTEIdolManager.closeAllPopups()">&times;</span><h3>⚓ 港口</h3><p>繁忙的国际货运港口。</p><div style="text-align:center"><button class="cte-idol-btn" onclick="window.CTEIdolManager.openTravelMenu('港口')">🚀 前往</button></div></div>

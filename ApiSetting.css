@@ -1,0 +1,518 @@
+/**
+ * Idol Manager 设置面板样式
+ */
+
+/* 遮罩层 */
+.idol-settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  backdrop-filter: blur(5px);
+}
+
+/* 设置面板 */
+.idol-settings-panel {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 头部 */
+.idol-settings-header {
+  background: linear-gradient(90deg, #0f3460 0%, #16213e 100%);
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.idol-settings-header h2 {
+  margin: 0;
+  color: #e94560;
+  font-size: 24px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.idol-settings-close {
+  background: rgba(233, 69, 96, 0.2);
+  border: 1px solid #e94560;
+  color: #e94560;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.idol-settings-close:hover {
+  background: #e94560;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* 内容区域 */
+.idol-settings-content {
+  padding: 30px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.idol-settings-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.idol-settings-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.idol-settings-content::-webkit-scrollbar-thumb {
+  background: rgba(233, 69, 96, 0.5);
+  border-radius: 4px;
+}
+
+.idol-settings-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(233, 69, 96, 0.7);
+}
+
+/* 设置区块 */
+.idol-settings-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.idol-settings-section h3 {
+  margin: 0 0 20px 0;
+  color: #e94560;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.idol-settings-section h3 i {
+  font-size: 20px;
+}
+
+/* 表单 */
+.idol-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.idol-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.idol-form-group label {
+  color: #a8b2d1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.idol-form-group input,
+.idol-form-group textarea {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #e0e0e0 !important;
+  font-size: 14px;
+  font-family: "Consolas", "Monaco", monospace;
+  transition: all 0.3s ease;
+}
+
+.idol-form-group input:focus,
+.idol-form-group textarea:focus {
+  outline: none;
+  border-color: #e94560;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.1);
+}
+
+.idol-form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+.idol-form-group small {
+  color: #8892b0;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.idol-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* 预设块 */
+.idol-preset-block {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 3px solid #e94560;
+}
+
+.idol-preset-block h4 {
+  margin: 0 0 15px 0;
+  color: #64ffda;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 按钮 */
+.idol-btn {
+  padding: 12px 24px;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  letter-spacing: 0;
+}
+
+.idol-btn-primary {
+  background: #e7cf92;
+  color: #2a2118;
+  border-color: #b99352;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.idol-btn-primary:hover {
+  background: #f0dca8;
+  border-color: #c6a05f;
+  color: #1f1710;
+  box-shadow: none;
+}
+
+.idol-btn-primary:active {
+  background: #d8bb77;
+  box-shadow: inset 0 1px 2px rgba(42, 33, 24, 0.18);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .idol-settings-panel {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .idol-settings-content {
+    padding: 20px;
+  }
+
+  .idol-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .idol-settings-header h2 {
+    font-size: 20px;
+  }
+}
+
+/* 密钥行：输入框+按钮横排 */
+.idol-api-key-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.idol-api-key-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.idol-fetch-models-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 模型行：文本输入+下拉选择 */
+.idol-model-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.idol-model-select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+
+.idol-model-select:focus {
+  border-color: #e94560;
+}
+
+/* 嵌入主面板时，设置页作为普通内容显示 */
+.idol-settings-inline {
+  width: 100%;
+  min-height: 100%;
+  color: #e0e0e0;
+}
+
+.idol-settings-inline .idol-settings-panel {
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  min-height: 100%;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.idol-settings-inline .idol-settings-close {
+  display: none;
+}
+
+.idol-settings-inline .idol-settings-content {
+  overflow: visible;
+}
+
+.idol-model-select option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+/* 次要按钮样式 */
+.idol-btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.idol-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.idol-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 让内嵌设置页与主系统的纸张风格统一 */
+.idol-settings-inline {
+  --idol-settings-paper: #f9f9f7;
+  --idol-settings-ink: #1a1a1a;
+  --idol-settings-muted: #666;
+  --idol-settings-line: #e0e0dc;
+  --idol-settings-soft: #f1eee8;
+  --idol-settings-accent: #b08d55;
+  --idol-settings-danger: #b03050;
+  width: 100%;
+  min-height: 100%;
+  color: var(--idol-settings-ink);
+  font-family: "Inter", sans-serif;
+}
+
+.idol-settings-inline .idol-settings-panel {
+  width: 96%;
+  max-width: 950px;
+  max-height: none;
+  min-height: 100%;
+  margin: 0 auto;
+  background: var(--idol-settings-paper);
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 4px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  color: var(--idol-settings-ink);
+}
+
+.idol-settings-inline .idol-settings-header {
+  background: transparent;
+  padding: 20px 25px 12px;
+  border-bottom: 4px solid var(--idol-settings-ink);
+}
+
+.idol-settings-inline .idol-settings-header h2 {
+  color: var(--idol-settings-ink);
+  font-family: "Noto Serif SC", serif;
+  font-size: 24px;
+  line-height: 1;
+  text-shadow: none;
+}
+
+.idol-settings-inline .idol-settings-close {
+  display: none;
+}
+
+.idol-settings-inline .idol-settings-content {
+  padding: 20px 25px 25px;
+  overflow: visible;
+}
+
+.idol-settings-inline .idol-settings-section {
+  background: #fff;
+  border: 1px solid var(--idol-settings-line);
+  border-left: 4px solid var(--idol-settings-accent);
+  border-radius: 4px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+
+.idol-settings-inline .idol-settings-section h3 {
+  color: var(--idol-settings-ink);
+  font-family: "Noto Serif SC", serif;
+  font-size: 17px;
+  margin-bottom: 16px;
+}
+
+.idol-settings-inline .idol-settings-section h3 i,
+.idol-settings-inline .idol-preset-block h4 {
+  color: var(--idol-settings-accent);
+}
+
+.idol-settings-inline .idol-settings-form {
+  gap: 16px;
+}
+
+.idol-settings-inline .idol-form-group label {
+  color: var(--idol-settings-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.idol-settings-inline .idol-form-group input,
+.idol-settings-inline .idol-form-group textarea,
+.idol-settings-inline .idol-model-select {
+  background: #fbfbfa !important;
+  border: 1px solid #d8d4cc !important;
+  border-radius: 4px;
+  color: var(--idol-settings-ink) !important;
+  font-family: "Inter", "Noto Serif SC", sans-serif;
+  box-shadow: none;
+}
+
+.idol-settings-inline .idol-form-group input:focus,
+.idol-settings-inline .idol-form-group textarea:focus,
+.idol-settings-inline .idol-model-select:focus {
+  border-color: var(--idol-settings-accent) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(176, 141, 85, 0.12);
+}
+
+.idol-settings-inline .idol-form-group small,
+.idol-settings-inline #idol-model-status {
+  color: #888;
+}
+
+.idol-settings-inline .idol-preset-block {
+  background: var(--idol-settings-soft);
+  border-left: 3px solid var(--idol-settings-accent);
+  border-radius: 4px;
+}
+
+.idol-settings-inline .idol-preset-block h4 {
+  font-family: "Noto Serif SC", serif;
+  font-size: 15px;
+}
+
+.idol-settings-inline .idol-btn {
+  border-radius: 0;
+}
+
+.idol-settings-inline .idol-btn-primary {
+  background: #e7cf92;
+  color: #2a2118;
+  border: 1px solid #b99352;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.idol-settings-inline .idol-btn-primary:hover {
+  background: #f0dca8;
+  color: #1f1710;
+  border-color: #c6a05f;
+  box-shadow: none;
+}
+
+.idol-settings-inline .idol-btn-secondary {
+  background: #fff;
+  color: var(--idol-settings-muted);
+  border: 1px solid #d8d4cc;
+}
+
+.idol-settings-inline .idol-btn-secondary:hover {
+  background: var(--idol-settings-ink);
+  color: #fff;
+  border-color: var(--idol-settings-ink);
+}
+
+.idol-settings-inline .idol-api-key-row {
+  align-items: stretch;
+}
+
+.idol-settings-inline .idol-fetch-models-btn {
+  min-width: 118px;
+}
+
+.idol-settings-inline .idol-model-select option {
+  background: #fff;
+  color: var(--idol-settings-ink);
+}
+
+/* 常用设置页只保留 API 配置，隐藏低频配置项 */
+.idol-settings-inline .idol-settings-context-section,
+.idol-settings-inline .idol-settings-presets-section {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .idol-settings-inline .idol-api-key-row {
+    flex-direction: column;
+  }
+
+  .idol-settings-inline .idol-fetch-models-btn {
+    width: 100%;
+  }
+}

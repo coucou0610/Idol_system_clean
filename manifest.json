@@ -1,0 +1,9 @@
+{
+  "display_name": "Idol-system",
+  "author": "coucou0610",
+  "version": "1.0.0",
+  "description": "Idol management system for SillyTavern.",
+  "js": "index.js",
+  "css": "style.css",
+  "html": "map.html"
+}
