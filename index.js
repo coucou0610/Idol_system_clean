@@ -22,6 +22,17 @@
 
     const extensionPath = resolveExtensionPath();
     const extensionName = extensionPath.split("/").filter(Boolean).pop() || "Idol-system-main";
+    const extensionPathCandidates = Array.from(new Set([
+        extensionPath,
+        "scripts/extensions/third-party/Idol-system",
+        "./scripts/extensions/third-party/Idol-system",
+        "/scripts/extensions/third-party/Idol-system",
+        "scripts/extensions/third-party/Idol-system-main",
+        "./scripts/extensions/third-party/Idol-system-main",
+        "/scripts/extensions/third-party/Idol-system-main",
+        `${extensionPath}/Idol-system-main`,
+        `${extensionPath}/Idol-system`,
+    ].filter(Boolean)));
     let stContext = null;
     const DEFAULT_NATIONAL_BG = "https://files.catbox.moe/8z3pnp.png";
 
@@ -3602,12 +3613,13 @@
         try {
             // 尝试多种路径方式加载 map.html
             let htmlContent = null;
-            const possiblePaths = [
+            const possiblePaths = Array.from(new Set([
+                ...extensionPathCandidates.map((basePath) => `${basePath}/map.html?v=${timestamp}`),
                 `${extensionPath}/map.html?v=${timestamp}`,
                 `./${extensionPath}/map.html?v=${timestamp}`,
                 `/scripts/extensions/third-party/${extensionName}/map.html?v=${timestamp}`,
                 `scripts/extensions/third-party/${extensionName}/map.html?v=${timestamp}`,
-            ];
+            ]));
 
             let lastError = null;
             for (const path of possiblePaths) {
