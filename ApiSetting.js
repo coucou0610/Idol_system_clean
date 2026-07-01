@@ -47,13 +47,13 @@
       <div class="idol-preset-block idol-api-profile" data-profile="${name}">
         <h4>${title}</h4>
         <div class="idol-form-row">
-          <div class="idol-form-group idol-independent-api-field" style="${independentFieldStyle}">
+          <div class="idol-form-group">
             <label>API Provider</label>
             <select id="idol-${name}-provider" class="idol-model-select" onchange="window.IdolSettings.onProviderChange('${name}')">
               ${getProviderOptions(profile.provider)}
             </select>
           </div>
-          <div class="idol-form-group">
+          <div class="idol-form-group idol-independent-api-field" style="${independentFieldStyle}">
             <label>Model</label>
             <select id="idol-${name}-model-select" class="idol-model-select" onchange="window.IdolSettings.onModelSelect('${name}')">
               ${getModelOptions(profile.provider, profile.model)}

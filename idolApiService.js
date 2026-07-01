@@ -18,9 +18,9 @@
   const PROVIDERS = Object.freeze({
     sillytavern: Object.freeze({
       id: "sillytavern",
-      label: "SillyTavern Main API",
+      label: "使用酒馆主 API",
       defaultModel: "",
-      models: Object.freeze([modelOption("", "Use current SillyTavern model")]),
+      models: Object.freeze([modelOption("", "使用当前酒馆模型")]),
       endpoint: "",
       keyPlaceholder: "",
     }),
