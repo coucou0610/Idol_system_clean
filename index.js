@@ -3396,6 +3396,119 @@
 
     // ==========================================
     // 统一左侧导航切换/ ==========================================
+    function renderInlineApiSettings(container) {
+        const service = window.IdolApiService || window.UserApiService || null;
+        const providers = service?.getProviderDefinitions?.() || {
+            sillytavern: { id: "sillytavern", label: "SillyTavern Main API", defaultModel: "", endpoint: "" },
+            openai: { id: "openai", label: "OpenAI", defaultModel: "gpt-4o-mini", endpoint: "https://api.openai.com/v1/chat/completions" },
+            compatible: { id: "compatible", label: "OpenAI Compatible", defaultModel: "", endpoint: "" },
+        };
+        const config = service?.getApiProfileConfig?.() || {};
+        const current = config.primary || {};
+        const currentProvider = current.provider || "sillytavern";
+        const isMainApi = currentProvider === "sillytavern";
+        const optionHtml = Object.values(providers)
+            .map((provider) => {
+                const id = provider.id || "";
+                const label = provider.label || id;
+                return `<option value="${id}" ${id === currentProvider ? "selected" : ""}>${label}</option>`;
+            })
+            .join("");
+
+        container.innerHTML = `
+            <div class="idol-settings-panel">
+                <div class="idol-settings-header">
+                    <h2>插件设置</h2>
+                </div>
+                <div class="idol-settings-section">
+                    <h3><i class="fa-solid fa-plug"></i> API 配置</h3>
+                    <label class="idol-setting-label" for="idol-inline-provider">API 模式</label>
+                    <select id="idol-inline-provider" class="idol-setting-input">
+                        ${optionHtml}
+                    </select>
+                    <div id="idol-inline-main-note" class="idol-setting-help" style="${isMainApi ? "" : "display:none;"}">
+                        当前会直接使用 SillyTavern 正在启用的主 API，不需要单独填写地址和密钥。
+                    </div>
+                    <div id="idol-inline-api-fields" style="${isMainApi ? "display:none;" : ""}">
+                        <label class="idol-setting-label" for="idol-inline-url">API 地址</label>
+                        <input id="idol-inline-url" class="idol-setting-input" value="${current.url || providers[currentProvider]?.endpoint || ""}">
+                        <label class="idol-setting-label" for="idol-inline-key">API 密钥</label>
+                        <input id="idol-inline-key" class="idol-setting-input" type="password" value="${current.key || ""}">
+                        <label class="idol-setting-label" for="idol-inline-model">模型名称</label>
+                        <input id="idol-inline-model" class="idol-setting-input" value="${current.model || providers[currentProvider]?.defaultModel || ""}">
+                    </div>
+                    <label class="idol-setting-label" for="idol-inline-temp">Temperature</label>
+                    <input id="idol-inline-temp" class="idol-setting-input" type="number" min="0" max="2" step="0.1" value="${current.temperature ?? 0.8}">
+                    <label class="idol-setting-label" for="idol-inline-tokens">Max Tokens</label>
+                    <input id="idol-inline-tokens" class="idol-setting-input" type="number" min="1" step="1" value="${current.max_tokens || 4000}">
+                    <button id="idol-inline-save" class="idol-save-api-btn">
+                        <i class="fa-solid fa-floppy-disk"></i> 保存 API 配置
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const providerSelect = container.querySelector("#idol-inline-provider");
+        const apiFields = container.querySelector("#idol-inline-api-fields");
+        const mainNote = container.querySelector("#idol-inline-main-note");
+        const urlInput = container.querySelector("#idol-inline-url");
+        const modelInput = container.querySelector("#idol-inline-model");
+
+        providerSelect?.addEventListener("change", () => {
+            const provider = providers[providerSelect.value] || {};
+            const mainApi = providerSelect.value === "sillytavern";
+            if (apiFields) apiFields.style.display = mainApi ? "none" : "";
+            if (mainNote) mainNote.style.display = mainApi ? "" : "none";
+            if (!mainApi) {
+                if (urlInput && !urlInput.value) urlInput.value = provider.endpoint || "";
+                if (modelInput && !modelInput.value) modelInput.value = provider.defaultModel || "";
+            }
+        });
+
+        container.querySelector("#idol-inline-save")?.addEventListener("click", () => {
+            const provider = providerSelect?.value || "sillytavern";
+            const nextConfig = {
+                ...config,
+                activeProfile: "primary",
+                primary: {
+                    ...(config.primary || {}),
+                    provider,
+                    url: provider === "sillytavern" ? "" : (urlInput?.value || "").trim(),
+                    key: provider === "sillytavern" ? "" : (container.querySelector("#idol-inline-key")?.value || "").trim(),
+                    model: provider === "sillytavern" ? "" : (modelInput?.value || "").trim(),
+                    temperature: Number(container.querySelector("#idol-inline-temp")?.value || 0.8),
+                    max_tokens: Number(container.querySelector("#idol-inline-tokens")?.value || 4000),
+                },
+            };
+            if (service?.saveApiProfileConfig) {
+                service.saveApiProfileConfig(nextConfig);
+            } else {
+                localStorage.setItem("idol_api_profiles", JSON.stringify(nextConfig));
+            }
+            if (typeof toastr !== "undefined") {
+                toastr.success("API 配置已保存");
+            }
+        });
+    }
+
+    async function renderSettingsView(container) {
+        try {
+            await loadExternalScripts();
+        } catch (error) {
+            console.warn("[CTE-Map] settings scripts reload failed, using inline settings.", error);
+        }
+
+        if (window.IdolSettings?.renderSettings) {
+            window.IdolSettings.renderSettings(container);
+            const html = container.innerHTML || "";
+            if (html.includes("SillyTavern Main API") || html.includes("酒馆主 API")) {
+                return;
+            }
+        }
+
+        renderInlineApiSettings(container);
+    }
+
     window.CTEIdolManager.switchMainView = async function (viewName, btn) {
         // 更新左侧按钮active状态
         document.querySelectorAll(".cte-left-nav-btn").forEach(b => b.classList.remove("active"));
@@ -3444,8 +3557,8 @@
             rpgWrapper.id = "cte-idol-rpg-content-area";
             rpgWrapper.style.padding = viewName === "music" ? "0" : "20px";
             rpgWrapper.style.overflowY = viewName === "music" ? "hidden" : "auto";
-            if (viewName === "settings" && window.IdolSettings?.renderSettings) {
-                window.IdolSettings.renderSettings(rpgWrapper);
+            if (viewName === "settings") {
+                await renderSettingsView(rpgWrapper);
             } else if (viewName === "music") {
                 rpgWrapper.innerHTML = '<div style="padding:30px; color:#666; font-family:serif;">音乐创作模块加载中...</div>';
                 const loaded = await ensureMusicModuleLoaded();
