@@ -44,29 +44,31 @@
     // ==========================================
     function loadExternalScripts() {
         return new Promise((resolve, reject) => {
-            const scripts = [
-                `${extensionPath}/UserApi.js`,
-                `${extensionPath}/ApiSetting.js`,
-            ];
-
-            let loaded = 0;
-
-            scripts.forEach((src) => {
-                const script = document.createElement("script");
-                script.src = src;
-                script.onload = () => {
-                    loaded++;
-                    if (loaded === scripts.length) {
-                        console.log("[CTE-Map] 独立API模块加载完成");
-                        resolve();
+            const timestamp = Date.now();
+            const loadFile = async (file) => {
+                const candidates = extensionPathCandidates.map((basePath) => `${basePath}/${file}?v=${timestamp}`);
+                let lastError = null;
+                for (const src of [...new Set(candidates)]) {
+                    try {
+                        await loadScriptOnce(src);
+                        console.log(`[CTE-Map] loaded ${file}: ${src}`);
+                        return;
+                    } catch (error) {
+                        lastError = error;
+                        console.warn(`[CTE-Map] failed ${file}: ${src}`, error);
                     }
-                };
-                script.onerror = () => {
-                    console.error("[CTE-Map] 加载失败:", src);
-                    reject(new Error(`Failed to load ${src}`));
-                };
-                document.head.appendChild(script);
-            });
+                }
+                throw lastError || new Error(`Failed to load ${file}`);
+            };
+
+            Promise.resolve()
+                .then(() => loadFile("UserApi.js"))
+                .then(() => loadFile("ApiSetting.js"))
+                .then(() => {
+                    console.log("[CTE-Map] external API scripts loaded");
+                    resolve();
+                })
+                .catch(reject);
         });
     }
 
@@ -74,12 +76,14 @@
     function loadExternalStyles() {
         ["ApiSetting.css", "music.css"].forEach((file) => {
             document
-                .querySelectorAll(`link[href*="${extensionPath}/${file}"]`)
+                .querySelectorAll(`link[href*="${file}"]`)
                 .forEach((el) => el.remove());
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.href = `${extensionPath}/${file}?v=${Date.now()}`;
-            document.head.appendChild(link);
+            extensionPathCandidates.forEach((basePath) => {
+                const link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = `${basePath}/${file}?v=${Date.now()}`;
+                document.head.appendChild(link);
+            });
         });
     }
 
@@ -110,7 +114,7 @@
         if (window.STMusic?.sharedApiNoSettings && window.STMusic?.init && window.STMusic?.togglePanel) return true;
         const timestamp = Date.now();
         const candidatePaths = [
-            `${extensionPath}/MusicModule.js?v=${timestamp}`,
+            ...extensionPathCandidates.map((basePath) => `${basePath}/MusicModule.js?v=${timestamp}`),
             `scripts/extensions/third-party/Idol-system-main/MusicModule.js?v=${timestamp}`,
             `scripts/extensions/third-party/Idol-system/MusicModule.js?v=${timestamp}`,
             `scripts/extensions/third-party/User-Idol-CTE-api-/MusicModule.js?v=${timestamp}`,
@@ -3553,14 +3557,16 @@
             .querySelectorAll("#cte-idol-map-panel, #cte-idol-toggle-btn")
             .forEach((el) => el.remove());
         document
-            .querySelectorAll(`link[href*="${extensionName}/style.css"]`)
+            .querySelectorAll('link[href*="style.css"]')
             .forEach((el) => el.remove());
 
         const timestamp = Date.now();
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = `${extensionPath}/style.css?v=${timestamp}`;
-        document.head.appendChild(link);
+        extensionPathCandidates.forEach((basePath) => {
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = `${basePath}/style.css?v=${timestamp}`;
+            document.head.appendChild(link);
+        });
 
         const panelHTML = `
             <div id="cte-idol-toggle-btn" title="点击打开 / 长按拖动"
