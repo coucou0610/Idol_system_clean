@@ -10,28 +10,26 @@
         const matchedScriptSrc = currentScriptSrc || scriptSources.reverse().find((src) => (
             src.includes("/scripts/extensions/third-party/")
             && /\/index\.js(?:\?|$)/.test(src)
-            && (src.includes("Idol-system") || src.includes("User-Idol"))
+            && (src.includes("Idol_system_clean") || src.includes("Idol-system") || src.includes("User-Idol"))
         ));
 
         if (matchedScriptSrc) {
             return matchedScriptSrc.substring(0, matchedScriptSrc.lastIndexOf("/"));
         }
 
-        return "scripts/extensions/third-party/Idol-system-main";
+        return "scripts/extensions/third-party/Idol_system_clean";
     }
 
     const extensionPath = resolveExtensionPath();
-    const extensionName = extensionPath.split("/").filter(Boolean).pop() || "Idol-system-main";
+    const extensionName = extensionPath.split("/").filter(Boolean).pop() || "Idol_system_clean";
     const extensionPathCandidates = Array.from(new Set([
         extensionPath,
-        "scripts/extensions/third-party/Idol-system",
-        "./scripts/extensions/third-party/Idol-system",
-        "/scripts/extensions/third-party/Idol-system",
-        "scripts/extensions/third-party/Idol-system-main",
-        "./scripts/extensions/third-party/Idol-system-main",
-        "/scripts/extensions/third-party/Idol-system-main",
-        `${extensionPath}/Idol-system-main`,
-        `${extensionPath}/Idol-system`,
+        "scripts/extensions/third-party/Idol_system_clean",
+        "./scripts/extensions/third-party/Idol_system_clean",
+        "/scripts/extensions/third-party/Idol_system_clean",
+        `scripts/extensions/third-party/${extensionName}`,
+        `./scripts/extensions/third-party/${extensionName}`,
+        `/scripts/extensions/third-party/${extensionName}`,
     ].filter(Boolean)));
     let stContext = null;
     const DEFAULT_NATIONAL_BG = "https://files.catbox.moe/8z3pnp.png";
@@ -116,9 +114,6 @@
         const timestamp = Date.now();
         const candidatePaths = [
             ...extensionPathCandidates.map((basePath) => `${basePath}/MusicModule.js?v=${timestamp}`),
-            `scripts/extensions/third-party/Idol-system-main/MusicModule.js?v=${timestamp}`,
-            `scripts/extensions/third-party/Idol-system/MusicModule.js?v=${timestamp}`,
-            `scripts/extensions/third-party/User-Idol-CTE-api-/MusicModule.js?v=${timestamp}`,
         ];
 
         for (const src of [...new Set(candidatePaths)]) {
@@ -3408,7 +3403,7 @@
             return;
         }
 
-        container.innerHTML = '<div style="padding:30px; color:#b03050; font-family:serif;">???????????? ApiSetting.js ????????</div>';
+        container.innerHTML = '<div style="padding:30px; color:#b03050; font-family:serif;">插件设置模块加载失败，请确认 ApiSetting.js 已放入插件目录。</div>';
     }
 
     window.CTEIdolManager.switchMainView = async function (viewName, btn) {
