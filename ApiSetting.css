@@ -496,6 +496,35 @@
   min-width: 118px;
 }
 
+.idol-settings-inline .idol-main-api-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d7bd82;
+  background: #f2e2b4;
+  color: #2a2118;
+  font-family: "Noto Serif SC", serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.idol-settings-inline .idol-main-api-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: #b99352;
+}
+
+.idol-settings-inline .idol-main-api-help {
+  display: block;
+  margin-top: -8px;
+  color: #77634a;
+  font-size: 12px;
+}
+
 .idol-settings-inline .idol-model-select option {
   background: #fff;
   color: var(--idol-settings-ink);
