@@ -2774,7 +2774,7 @@
                                 <i class="fa-solid fa-spinner fa-spin"></i> 正在生成日报...
                             </div>
                             <div style="display:flex; gap:20px; font-size:11px; color:#999;">
-                                <span>插件作者: <span style="color:green;font-weight:bold;">1900</span></span>
+                                <span>插件作者: <span style="color:green;font-weight:bold;">1900</span> / 插件二改来自松茸の土瓶蒸し</span>
                                 <span>遇到问题了吗？请到Discord寻找答疑</span>
                             </div>
                         </div>
