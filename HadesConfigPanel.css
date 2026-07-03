@@ -1,0 +1,194 @@
+/* HADES configuration panel */
+
+.hades-settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(19, 15, 12, 0.72);
+}
+
+.hades-settings-panel {
+  width: min(940px, calc(100vw - 48px));
+  max-height: min(760px, calc(100vh - 48px));
+  display: flex;
+  flex-direction: column;
+  background: #f7f2ea;
+  color: #1f1711;
+  border: 1px solid #c7a46c;
+  border-radius: 0;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+  overflow: hidden;
+  font-family: "Noto Serif SC", "Microsoft YaHei", serif;
+}
+
+.hades-settings-inline .hades-settings-panel {
+  width: 100%;
+  max-height: none;
+  box-shadow: none;
+}
+
+.hades-settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 28px 16px;
+  border-bottom: 4px solid #231f1b;
+  background: #fbf8f2;
+}
+
+.hades-settings-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0;
+  color: #1d1915;
+}
+
+.hades-settings-close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #c7a46c;
+  border-radius: 0;
+  background: #e7cc8c;
+  color: #1b1712;
+  cursor: pointer;
+}
+
+.hades-settings-content {
+  padding: 24px 28px 34px;
+  overflow-y: auto;
+}
+
+.hades-settings-section {
+  border-left: 4px solid #b88d4a;
+  border-top: 1px solid #e3d5bf;
+  border-right: 1px solid #e3d5bf;
+  border-bottom: 1px solid #e3d5bf;
+  background: #fffdfa;
+  padding: 20px 22px 22px;
+}
+
+.hades-settings-section h3 {
+  margin: 0 0 18px;
+  font-size: 18px;
+  color: #241b14;
+}
+
+.hades-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hades-main-api-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  color: #211912;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hades-main-api-toggle input {
+  accent-color: #c79a45;
+}
+
+.hades-main-api-help {
+  display: block;
+  color: #746451;
+  line-height: 1.6;
+}
+
+.hades-independent-api-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hades-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.hades-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hades-form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5b4a37;
+}
+
+.hades-form-group input {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid #d6c7ad;
+  border-radius: 0;
+  background: #f8f4ed;
+  color: #16120e;
+  padding: 9px 12px;
+  font-size: 14px;
+}
+
+.hades-form-group input:focus {
+  outline: 2px solid rgba(199, 154, 69, 0.28);
+  border-color: #b88d4a;
+}
+
+.hades-api-key-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.hades-btn {
+  min-height: 42px;
+  border: 1px solid #b88d4a;
+  border-radius: 0;
+  background: #e8cf91;
+  color: #1a1510;
+  padding: 0 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hades-btn:hover {
+  background: #dfbd70;
+}
+
+.hades-btn-secondary {
+  background: #f7f1e6;
+}
+
+.hades-btn-primary {
+  width: 100%;
+  background: #e4c376;
+}
+
+@media (max-width: 720px) {
+  .hades-settings-panel {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+  }
+
+  .hades-settings-header,
+  .hades-settings-content {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .hades-form-row,
+  .hades-api-key-row {
+    grid-template-columns: 1fr;
+  }
+}
