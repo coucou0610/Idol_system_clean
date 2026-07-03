@@ -1,10 +1,9 @@
-﻿{
-  "display_name": "Idol System Clean",
-  "author": "coucou0610",
-  "version": "1.0.0",
-  "description": "Entertainment agency management system for SillyTavern.",
-  "js": "index.js",
-  "css": "style.css",
-  "html": "map.html"
+{
+    "display_name":  "Idol System Clean",
+    "author":  "coucou0610",
+    "version":  "1.0.0",
+    "description":  "Entertainment agency management system for SillyTavern.",
+    "js":  "index.js",
+    "css":  "style.css",
+    "html":  "map.html"
 }
-
