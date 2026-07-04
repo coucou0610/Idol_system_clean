@@ -163,6 +163,13 @@
   align-items: stretch;
 }
 
+.hades-api-model-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
 .hades-btn {
   min-height: 42px;
   border: 1px solid #b88d4a;
@@ -200,7 +207,8 @@
   }
 
   .hades-form-row,
-  .hades-api-key-row {
+  .hades-api-key-row,
+  .hades-api-model-row {
     grid-template-columns: 1fr;
   }
 }

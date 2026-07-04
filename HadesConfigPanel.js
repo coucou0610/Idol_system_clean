@@ -62,6 +62,67 @@
       .filter(Boolean);
   }
 
+  function setModelChoices(models) {
+    const values = [...new Set((models || []).map((model) => String(model || "").trim()).filter(Boolean))];
+    const modelList = document.getElementById("hades-api-model-list");
+    const modelInput = document.getElementById("hades-api-model");
+    if (modelList) {
+      modelList.innerHTML = values.map((value) => `<option value="${esc(value)}"></option>`).join("");
+    }
+    if (modelInput && values.length && (!modelInput.value || !values.includes(modelInput.value))) {
+      modelInput.value = values[0];
+    }
+    return values;
+  }
+
+  function apiBaseToModelsEndpoint(baseUrl) {
+    const clean = String(baseUrl || "").trim().replace(/\/+$/, "");
+    if (!clean) return "";
+    if (/\/models$/i.test(clean)) return clean;
+    if (/\/chat\/completions$/i.test(clean)) return clean.replace(/\/chat\/completions$/i, "/models");
+    if (/\/v\d+$/i.test(clean)) return `${clean}/models`;
+    return `${clean}/v1/models`;
+  }
+
+  function modelFetchPlan(provider, url, key) {
+    const headers = {};
+    if (provider === "openai") return { url: apiBaseToModelsEndpoint(url), headers: key ? { Authorization: `Bearer ${key}` } : {} };
+    if (provider === "chatgpt") return { url: "https://api.openai.com/v1/models", headers: { Authorization: `Bearer ${key}` } };
+    if (provider === "deepseek") return { url: "https://api.deepseek.com/models", headers: { Authorization: `Bearer ${key}` } };
+    if (provider === "claude") {
+      headers["x-api-key"] = key;
+      headers["anthropic-version"] = "2023-06-01";
+      headers["anthropic-dangerous-direct-browser-access"] = "true";
+      return { url: "https://api.anthropic.com/v1/models", headers };
+    }
+    if (provider === "gemini") return { url: `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`, headers };
+    if (provider === "minimax") return { url: "https://api.minimax.io/v1/models", headers: { Authorization: `Bearer ${key}` } };
+    return { url: "", headers };
+  }
+
+  function readModelsFromPayload(payload, provider) {
+    const data = Array.isArray(payload?.data) ? payload.data : [];
+    if (provider === "gemini") {
+      return (Array.isArray(payload?.models) ? payload.models : [])
+        .map((model) => String(model?.name || "").replace(/^models\//, ""))
+        .filter(Boolean);
+    }
+    return [
+      ...data.map((model) => model?.id || model?.name || model?.model),
+      ...(Array.isArray(payload?.models) ? payload.models.map((model) => model?.id || model?.name || model?.model || model) : []),
+    ].filter(Boolean);
+  }
+
+  function notify(message, type = "success") {
+    if (typeof toastr !== "undefined") {
+      if (type === "error") toastr.error(message);
+      else if (type === "warning") toastr.warning(message);
+      else toastr.success(message);
+      return;
+    }
+    alert(message);
+  }
+
   function buildHadesSettingsMarkup() {
     const service = getService();
     if (!service) {
@@ -113,10 +174,16 @@
 
                 <div class="hades-form-group">
                   <label>模型名称</label>
-                  <input type="text" id="hades-api-model" value="${esc(profile.model || "")}" placeholder="gpt-4o-mini" list="hades-api-model-list">
+                  <div class="hades-api-model-row">
+                    <input type="text" id="hades-api-model" value="${esc(profile.model || "")}" placeholder="gpt-4o-mini" list="hades-api-model-list">
+                    <button class="hades-btn hades-btn-secondary hades-fetch-models-btn" onclick="window.HadesConfigPanel.fetchProviderModels()" type="button">
+                      <i class="fa-solid fa-arrows-rotate"></i> 获取模型
+                    </button>
+                  </div>
                   <datalist id="hades-api-model-list">
                     ${modelOptions(selectedProvider, profile.model || "")}
                   </datalist>
+                  <small class="hades-field-help">会按当前 API 类型读取可用模型；如果接口不允许浏览器读取，会使用内置推荐列表。</small>
                 </div>
               </div>
 
@@ -190,6 +257,53 @@
     }
   }
 
+  async function fetchProviderModels() {
+    const provider = document.getElementById("hades-api-provider")?.value || "chatgpt";
+    const key = document.getElementById("hades-api-key")?.value.trim() || "";
+    const url = document.getElementById("hades-api-url")?.value.trim() || "";
+    const button = document.querySelector(".hades-fetch-models-btn");
+    const fallback = modelValues(provider);
+
+    if (provider === "openai" && !url) {
+      notify("请先填写 OpenAI / OpenAI 兼容接口的 API 地址。", "error");
+      return;
+    }
+    if (!key) {
+      notify("请先填写 API 密钥。", "error");
+      return;
+    }
+
+    const plan = modelFetchPlan(provider, url, key);
+    if (!plan.url) {
+      setModelChoices(fallback);
+      notify("当前 API 类型暂不支持在线获取模型，已显示内置推荐模型。", "warning");
+      return;
+    }
+
+    try {
+      if (button) {
+        button.disabled = true;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 获取中';
+      }
+      const response = await fetch(plan.url, { headers: plan.headers });
+      if (!response.ok) throw new Error(`${response.status}: ${await response.text()}`);
+      const payload = await response.json();
+      const models = readModelsFromPayload(payload, provider);
+      if (!models.length) throw new Error("没有读取到模型列表");
+      setModelChoices(models);
+      notify(`已获取 ${models.length} 个模型`);
+    } catch (error) {
+      setModelChoices(fallback);
+      console.warn("[HADES Config Panel] model fetch failed:", error);
+      notify("在线获取模型失败，已显示内置推荐模型。部分官方接口会阻止浏览器直接读取模型列表。", "warning");
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> 获取模型';
+      }
+    }
+  }
+
   function persistHadesApiProfile() {
     const service = getService();
     if (!service) {
@@ -233,16 +347,12 @@
     else alert("API 配置已保存");
   }
 
-  async function showManualModelNotice() {
-    alert("当前版本请直接填写模型名称。");
-  }
-
   window.HadesConfigPanel = {
     openHadesSettingsOverlay,
     mountHadesSettings,
     closeHadesSettings,
     persistHadesApiProfile,
-    showManualModelNotice,
+    fetchProviderModels,
     syncProviderMode,
   };
 
