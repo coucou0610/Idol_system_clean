@@ -108,12 +108,7 @@
 
                 <div class="hades-form-group">
                   <label>API 密钥</label>
-                  <div class="hades-api-key-row">
-                    <input type="password" id="hades-api-key" value="${esc(profile.key || "")}" placeholder="sk-...">
-                    <button class="hades-btn hades-btn-secondary hades-fetch-models-btn" onclick="window.HadesConfigPanel.showManualModelNotice()" type="button">
-                      <i class="fa-solid fa-arrows-rotate"></i> 获取模型
-                    </button>
-                  </div>
+                  <input type="password" id="hades-api-key" value="${esc(profile.key || "")}" placeholder="sk-...">
                 </div>
 
                 <div class="hades-form-group">
