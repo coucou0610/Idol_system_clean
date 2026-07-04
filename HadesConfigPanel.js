@@ -66,16 +66,17 @@
       .filter(Boolean);
   }
 
-  function setModelChoices(models) {
+  function setModelChoices(models, options = {}) {
+    const keepCurrent = Boolean(options.keepCurrent);
     const modelSelect = document.getElementById("hades-api-model");
     const current = String(modelSelect?.value || "").trim();
     const values = [...new Set((models || []).map((model) => String(model || "").trim()).filter(Boolean))];
-    if (current && !values.includes(current)) values.unshift(current);
+    if (keepCurrent && current && !values.includes(current)) values.unshift(current);
     if (modelSelect) {
       modelSelect.innerHTML = values.map((value) => `<option value="${esc(value)}">${esc(value)}</option>`).join("");
     }
     if (modelSelect && values.length) {
-      modelSelect.value = current && values.includes(current) ? current : values[0];
+      modelSelect.value = keepCurrent && current && values.includes(current) ? current : values[0];
     }
     return values;
   }
@@ -256,9 +257,9 @@
       el.style.display = !checked && needsUrl ? "" : "none";
     });
 
-    const modelInput = document.getElementById("hades-api-model");
     const values = setModelChoices(currentProviderModels(provider));
-    if (modelInput && values.length) modelInput.value = values.includes(modelInput.value) ? modelInput.value : values[0];
+    const modelInput = document.getElementById("hades-api-model");
+    if (modelInput && values.length) modelInput.value = values[0];
   }
 
   async function fetchProviderModels() {
@@ -294,7 +295,7 @@
       const payload = await response.json();
       const models = readModelsFromPayload(payload, provider);
       if (!models.length) throw new Error("没有读取到模型列表");
-      setModelChoices(models);
+      setModelChoices(models, { keepCurrent: true });
       notify(`已获取 ${models.length} 个模型`);
     } catch (error) {
       setModelChoices(fallback);
