@@ -26,6 +26,42 @@
     return service.readHadesApiProfile?.() || {};
   }
 
+  function getProviders() {
+    const service = getService();
+    return service?.listHadesProviders?.() || {};
+  }
+
+  function providerForSettings(profile) {
+    if (profile.provider === "custom") return "openai";
+    if (profile.provider === "sillytavern") return "chatgpt";
+    return profile.provider || "chatgpt";
+  }
+
+  function providerOptions(selected) {
+    const providers = getProviders();
+    const ids = ["openai", "chatgpt", "claude", "gemini", "deepseek", "minimax"];
+    return ids.map((id) => {
+      const label = providers[id]?.label || id;
+      return `<option value="${esc(id)}" ${id === selected ? "selected" : ""}>${esc(label)}</option>`;
+    }).join("");
+  }
+
+  function modelOptions(providerId, currentModel) {
+    const provider = getProviders()[providerId] || {};
+    const models = Array.isArray(provider.models) ? provider.models : [];
+    return models
+      .filter((model) => model?.value)
+      .map((model) => `<option value="${esc(model.value)}">${esc(model.label || model.value)}</option>`)
+      .join("");
+  }
+
+  function modelValues(providerId) {
+    const provider = getProviders()[providerId] || {};
+    return (Array.isArray(provider.models) ? provider.models : [])
+      .map((model) => model?.value)
+      .filter(Boolean);
+  }
+
   function buildHadesSettingsMarkup() {
     const service = getService();
     if (!service) {
@@ -34,6 +70,8 @@
 
     const profile = getCurrentProfile();
     const useMainApi = profile.provider === "sillytavern";
+    const selectedProvider = providerForSettings(profile);
+    const needsUrl = selectedProvider === "openai";
 
     return `
       <div class="hades-settings-panel">
@@ -56,8 +94,16 @@
 
               <div class="hades-independent-api-fields" style="${useMainApi ? "display:none" : ""}">
                 <div class="hades-form-group">
+                  <label>官方 API 类型</label>
+                  <select id="hades-api-provider" onchange="window.HadesConfigPanel.syncProviderMode()">
+                    ${providerOptions(selectedProvider)}
+                  </select>
+                </div>
+
+                <div class="hades-form-group hades-api-url-group" style="${needsUrl ? "" : "display:none"}">
                   <label>API 地址</label>
                   <input type="text" id="hades-api-url" value="${esc(profile.url || "")}" placeholder="https://api.openai.com/v1 或 https://gcli.ggchan.dev/v1">
+                  <small class="hades-field-help">仅 OpenAI / OpenAI 兼容接口需要填写。其它官方接口会自动使用默认地址。</small>
                 </div>
 
                 <div class="hades-form-group">
@@ -72,7 +118,10 @@
 
                 <div class="hades-form-group">
                   <label>模型名称</label>
-                  <input type="text" id="hades-api-model" value="${esc(profile.model || "")}" placeholder="gpt-4o-mini">
+                  <input type="text" id="hades-api-model" value="${esc(profile.model || "")}" placeholder="gpt-4o-mini" list="hades-api-model-list">
+                  <datalist id="hades-api-model-list">
+                    ${modelOptions(selectedProvider, profile.model || "")}
+                  </datalist>
                 </div>
               </div>
 
@@ -124,12 +173,26 @@
 
   function syncProviderMode() {
     const checked = Boolean(document.getElementById("hades-use-main-api")?.checked);
+    const provider = document.getElementById("hades-api-provider")?.value || "chatgpt";
+    const needsUrl = provider === "openai";
     document.querySelectorAll(".hades-independent-api-fields").forEach((el) => {
       el.style.display = checked ? "none" : "";
       el.querySelectorAll("input, button, select, textarea").forEach((field) => {
         field.disabled = checked;
       });
     });
+    document.querySelectorAll(".hades-api-url-group").forEach((el) => {
+      el.style.display = !checked && needsUrl ? "" : "none";
+    });
+
+    const modelList = document.getElementById("hades-api-model-list");
+    if (modelList) modelList.innerHTML = modelOptions(provider, document.getElementById("hades-api-model")?.value || "");
+
+    const modelInput = document.getElementById("hades-api-model");
+    const values = modelValues(provider);
+    if (modelInput && values.length && (!modelInput.value || !values.includes(modelInput.value))) {
+      modelInput.value = values[0];
+    }
   }
 
   function persistHadesApiProfile() {
@@ -140,6 +203,7 @@
     }
 
     const useMainApi = Boolean(document.getElementById("hades-use-main-api")?.checked);
+    const provider = document.getElementById("hades-api-provider")?.value || "chatgpt";
     const temperature = parseFloat(document.getElementById("hades-api-temperature")?.value) || 0.8;
     const maxTokens = parseInt(document.getElementById("hades-api-tokens")?.value, 10) || 4000;
     const nextProfile = useMainApi
@@ -152,8 +216,8 @@
           max_tokens: maxTokens,
         }
       : {
-          provider: "custom",
-          url: document.getElementById("hades-api-url")?.value.trim() || "",
+          provider,
+          url: provider === "openai" ? (document.getElementById("hades-api-url")?.value.trim() || "") : "",
           key: document.getElementById("hades-api-key")?.value.trim() || "",
           model: document.getElementById("hades-api-model")?.value.trim() || "",
           temperature,

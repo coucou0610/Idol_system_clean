@@ -127,7 +127,8 @@
   color: #5b4a37;
 }
 
-.hades-form-group input {
+.hades-form-group input,
+.hades-form-group select {
   width: 100%;
   min-height: 42px;
   box-sizing: border-box;
@@ -139,9 +140,20 @@
   font-size: 14px;
 }
 
-.hades-form-group input:focus {
+.hades-form-group select {
+  appearance: auto;
+}
+
+.hades-form-group input:focus,
+.hades-form-group select:focus {
   outline: 2px solid rgba(199, 154, 69, 0.28);
   border-color: #b88d4a;
+}
+
+.hades-field-help {
+  display: block;
+  color: #746451;
+  line-height: 1.55;
 }
 
 .hades-api-key-row {

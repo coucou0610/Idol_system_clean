@@ -25,10 +25,19 @@
   const providers = Object.freeze({
     sillytavern: { label: "使用酒馆主 API", models: [{ value: "", label: "使用当前酒馆模型" }] },
     custom: { label: "OpenAI Compatible", models: [{ value: "", label: "手动填写模型" }] },
-    openai: { label: "OpenAI", models: [{ value: "gpt-4o-mini" }, { value: "gpt-4o" }, { value: "gpt-4.1-mini" }] },
+    openai: {
+      label: "OpenAI",
+      needsUrl: true,
+      models: [{ value: "gpt-4o-mini" }, { value: "gpt-4o" }, { value: "gpt-4.1-mini" }],
+    },
+    chatgpt: {
+      label: "ChatGPT",
+      models: [{ value: "gpt-4o-mini" }, { value: "gpt-4o" }, { value: "gpt-4.1-mini" }],
+    },
     gemini: { label: "Gemini", models: [{ value: "gemini-2.5-flash" }, { value: "gemini-2.5-pro" }] },
     claude: { label: "Claude", models: [{ value: "claude-3-5-sonnet-latest" }, { value: "claude-3-5-haiku-latest" }] },
     deepseek: { label: "DeepSeek", models: [{ value: "deepseek-chat" }, { value: "deepseek-reasoner" }] },
+    minimax: { label: "MiniMax", models: [{ value: "MiniMax-M3" }, { value: "MiniMax-M2.7" }, { value: "MiniMax-M2.5" }] },
   });
 
   let requestHandle = null;
@@ -247,9 +256,10 @@
   };
 
   const completeEndpoint = (profile) => {
-    if (profile.provider === "openai") return "https://api.openai.com/v1/chat/completions";
+    if (profile.provider === "chatgpt") return "https://api.openai.com/v1/chat/completions";
     if (profile.provider === "deepseek") return "https://api.deepseek.com/chat/completions";
     if (profile.provider === "claude") return "https://api.anthropic.com/v1/messages";
+    if (profile.provider === "minimax") return "https://api.minimax.io/v1/chat/completions";
     if (profile.provider === "gemini") {
       const model = encodeURIComponent(profile.model || "gemini-2.5-flash");
       return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(profile.key)}`;
@@ -274,6 +284,7 @@
     } else if (profile.provider === "claude") {
       headers["x-api-key"] = profile.key;
       headers["anthropic-version"] = "2023-06-01";
+      headers["anthropic-dangerous-direct-browser-access"] = "true";
       const system = messages.find((m) => m.role === "system")?.content || "";
       body = {
         model: profile.model || "claude-3-5-sonnet-latest",
@@ -305,6 +316,7 @@
   const isReady = (profile) => {
     if (profile.provider === "sillytavern") return true;
     if (profile.provider === "gemini") return Boolean(profile.key && profile.model);
+    if (profile.provider === "openai") return Boolean(profile.url && profile.key && profile.model);
     return Boolean(profile.url || profile.provider !== "custom") && Boolean(profile.model) && (profile.provider === "custom" ? Boolean(profile.key || profile.url) : Boolean(profile.key));
   };
 

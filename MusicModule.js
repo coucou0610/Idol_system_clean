@@ -48,6 +48,85 @@ console.log("🎵 [ST Music] 脚本文件已加载 (Client Mode)");
             return `${clean}/chat/completions`;
         }
 
+        function composePlainPrompt(messages) {
+            return messages.map((message) => {
+                const label = message.role === "system" ? "System" : message.role === "assistant" ? "Assistant" : "User";
+                return `${label}:\n${message.content || ""}`;
+            }).join("\n\n");
+        }
+
+        function officialEndpoint(config) {
+            if (config.provider === "chatgpt") return "https://api.openai.com/v1/chat/completions";
+            if (config.provider === "deepseek") return "https://api.deepseek.com/chat/completions";
+            if (config.provider === "minimax") return "https://api.minimax.io/v1/chat/completions";
+            if (config.provider === "claude") return "https://api.anthropic.com/v1/messages";
+            if (config.provider === "gemini") {
+                const model = encodeURIComponent(config.model || "gemini-2.5-flash");
+                return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(config.key || "")}`;
+            }
+            return buildApiUrl(config.url || "");
+        }
+
+        function buildOfficialRequest(config, messages) {
+            const provider = config.provider || "openai";
+            const headers = { "Content-Type": "application/json" };
+            let body;
+
+            if (provider === "gemini") {
+                body = {
+                    contents: [{ role: "user", parts: [{ text: composePlainPrompt(messages) }] }],
+                    generationConfig: {
+                        temperature: Number(config.temperature ?? 0.8),
+                        maxOutputTokens: Number(config.max_tokens ?? 3000),
+                    },
+                };
+            } else if (provider === "claude") {
+                headers["x-api-key"] = config.key;
+                headers["anthropic-version"] = "2023-06-01";
+                headers["anthropic-dangerous-direct-browser-access"] = "true";
+                body = {
+                    model: config.model || "claude-3-5-sonnet-latest",
+                    system: messages.find((message) => message.role === "system")?.content || "",
+                    messages: messages.filter((message) => message.role !== "system"),
+                    temperature: Number(config.temperature ?? 0.8),
+                    max_tokens: Number(config.max_tokens ?? 3000),
+                };
+            } else {
+                headers.Authorization = `Bearer ${config.key}`;
+                body = {
+                    model: config.model,
+                    messages,
+                    temperature: Number(config.temperature ?? 0.8),
+                    max_tokens: Number(config.max_tokens ?? 3000),
+                };
+            }
+
+            return {
+                url: officialEndpoint(config),
+                init: {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify(body),
+                },
+            };
+        }
+
+        function readApiText(data, provider) {
+            if (provider === "gemini") {
+                return data?.candidates?.[0]?.content?.parts?.map((part) => part?.text || "").join("").trim() || "";
+            }
+            if (provider === "claude") {
+                return data?.content?.map((part) => part?.text || "").join("").trim() || "";
+            }
+            return data?.choices?.[0]?.message?.content || data?.output_text || data?.message?.content || "";
+        }
+
+        function isMusicApiReady(config) {
+            if (config.provider === "sillytavern") return true;
+            if (config.provider === "openai" || config.provider === "custom") return Boolean(config.url && config.key && config.model);
+            return Boolean(config.key && config.model);
+        }
+
 
         async function callSillyTavernMainApi(messages) {
             const context = window.SillyTavern?.getContext?.();
@@ -107,32 +186,21 @@ console.log("🎵 [ST Music] 脚本文件已加载 (Client Mode)");
                 }
             }
 
-            if (!config.url || !config.key || !config.model) {
+            if (!isMusicApiReady(config)) {
                 return { success: false, error: "请先在插件设置中配置 API，或选择 SillyTavern Main API。" };
             }
 
             currentAbortController = new AbortController();
             try {
-                const response = await fetch(buildApiUrl(config.url), {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${config.key}`,
-                    },
-                    body: JSON.stringify({
-                        model: config.model,
-                        messages,
-                        temperature: Number(config.temperature ?? 0.8),
-                        max_tokens: Number(config.max_tokens ?? 3000),
-                    }),
-                    signal: currentAbortController.signal,
-                });
+                const request = buildOfficialRequest(config, messages);
+                request.init.signal = currentAbortController.signal;
+                const response = await fetch(request.url, request.init);
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`API 请求失败: ${response.status} ${errorText}`);
                 }
                 const data = await response.json();
-                const content = data?.choices?.[0]?.message?.content || data?.message?.content || "";
+                const content = readApiText(data, config.provider);
                 if (!content) throw new Error("无法解析 API 响应");
                 return { success: true, content };
             } catch (error) {
