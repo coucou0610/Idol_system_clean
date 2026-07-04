@@ -28,16 +28,25 @@
     openai: {
       label: "OpenAI",
       needsUrl: true,
-      models: [{ value: "gpt-4o-mini" }, { value: "gpt-4o" }, { value: "gpt-4.1-mini" }],
+      models: [{ value: "gpt-5.5" }, { value: "gpt-5.4" }, { value: "gpt-5.4-mini" }, { value: "gpt-5.4-nano" }, { value: "gpt-4o" }, { value: "gpt-4o-mini" }],
     },
     chatgpt: {
       label: "ChatGPT",
-      models: [{ value: "gpt-4o-mini" }, { value: "gpt-4o" }, { value: "gpt-4.1-mini" }],
+      models: [{ value: "gpt-5.5" }, { value: "gpt-5.4" }, { value: "gpt-5.4-mini" }, { value: "gpt-5.4-nano" }, { value: "gpt-4o" }, { value: "gpt-4o-mini" }],
     },
-    gemini: { label: "Gemini", models: [{ value: "gemini-2.5-flash" }, { value: "gemini-2.5-pro" }] },
-    claude: { label: "Claude", models: [{ value: "claude-3-5-sonnet-latest" }, { value: "claude-3-5-haiku-latest" }] },
-    deepseek: { label: "DeepSeek", models: [{ value: "deepseek-chat" }, { value: "deepseek-reasoner" }] },
-    minimax: { label: "MiniMax", models: [{ value: "MiniMax-M3" }, { value: "MiniMax-M2.7" }, { value: "MiniMax-M2.5" }] },
+    gemini: {
+      label: "Gemini",
+      models: [{ value: "gemini-3.5-flash" }, { value: "gemini-3.1-flash-lite" }, { value: "gemini-2.5-flash" }, { value: "gemini-2.5-flash-lite" }, { value: "gemini-2.5-pro" }],
+    },
+    claude: {
+      label: "Claude",
+      models: [{ value: "claude-fable-5" }, { value: "claude-opus-4-8" }, { value: "claude-sonnet-5" }, { value: "claude-haiku-4-5" }],
+    },
+    deepseek: {
+      label: "DeepSeek",
+      models: [{ value: "deepseek-v4-flash" }, { value: "deepseek-v4-pro" }, { value: "deepseek-chat" }, { value: "deepseek-reasoner" }],
+    },
+    minimax: { label: "MiniMax", models: [{ value: "MiniMax-M3" }, { value: "MiniMax-M2.7" }, { value: "M2.7-highspeed" }, { value: "MiniMax-M2.5" }, { value: "M2.5-highspeed" }] },
   });
 
   let requestHandle = null;

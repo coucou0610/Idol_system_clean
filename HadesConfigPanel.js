@@ -75,6 +75,11 @@
     return values;
   }
 
+  function currentProviderModels(providerId) {
+    const values = modelValues(providerId);
+    return values.length ? values : [document.getElementById("hades-api-model")?.value || ""].filter(Boolean);
+  }
+
   function apiBaseToModelsEndpoint(baseUrl) {
     const clean = String(baseUrl || "").trim().replace(/\/+$/, "");
     if (!clean) return "";
@@ -247,14 +252,9 @@
       el.style.display = !checked && needsUrl ? "" : "none";
     });
 
-    const modelList = document.getElementById("hades-api-model-list");
-    if (modelList) modelList.innerHTML = modelOptions(provider, document.getElementById("hades-api-model")?.value || "");
-
     const modelInput = document.getElementById("hades-api-model");
-    const values = modelValues(provider);
-    if (modelInput && values.length && (!modelInput.value || !values.includes(modelInput.value))) {
-      modelInput.value = values[0];
-    }
+    const values = setModelChoices(currentProviderModels(provider));
+    if (modelInput && values.length) modelInput.value = values.includes(modelInput.value) ? modelInput.value : values[0];
   }
 
   async function fetchProviderModels() {
