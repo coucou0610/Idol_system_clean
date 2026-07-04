@@ -48,10 +48,14 @@
 
   function modelOptions(providerId, currentModel) {
     const provider = getProviders()[providerId] || {};
+    const saved = String(currentModel || "").trim();
     const models = Array.isArray(provider.models) ? provider.models : [];
-    return models
-      .filter((model) => model?.value)
-      .map((model) => `<option value="${esc(model.value)}">${esc(model.label || model.value)}</option>`)
+    const values = models
+      .map((model) => model?.value)
+      .filter(Boolean);
+    if (saved && !values.includes(saved)) values.unshift(saved);
+    return values
+      .map((value) => `<option value="${esc(value)}" ${value === saved ? "selected" : ""}>${esc(value)}</option>`)
       .join("");
   }
 
@@ -63,14 +67,15 @@
   }
 
   function setModelChoices(models) {
+    const modelSelect = document.getElementById("hades-api-model");
+    const current = String(modelSelect?.value || "").trim();
     const values = [...new Set((models || []).map((model) => String(model || "").trim()).filter(Boolean))];
-    const modelList = document.getElementById("hades-api-model-list");
-    const modelInput = document.getElementById("hades-api-model");
-    if (modelList) {
-      modelList.innerHTML = values.map((value) => `<option value="${esc(value)}"></option>`).join("");
+    if (current && !values.includes(current)) values.unshift(current);
+    if (modelSelect) {
+      modelSelect.innerHTML = values.map((value) => `<option value="${esc(value)}">${esc(value)}</option>`).join("");
     }
-    if (modelInput && values.length && (!modelInput.value || !values.includes(modelInput.value))) {
-      modelInput.value = values[0];
+    if (modelSelect && values.length) {
+      modelSelect.value = current && values.includes(current) ? current : values[0];
     }
     return values;
   }
@@ -180,14 +185,13 @@
                 <div class="hades-form-group">
                   <label>模型名称</label>
                   <div class="hades-api-model-row">
-                    <input type="text" id="hades-api-model" value="${esc(profile.model || "")}" placeholder="gpt-4o-mini" list="hades-api-model-list">
+                    <select id="hades-api-model">
+                      ${modelOptions(selectedProvider, profile.model || "")}
+                    </select>
                     <button class="hades-btn hades-btn-secondary hades-fetch-models-btn" onclick="window.HadesConfigPanel.fetchProviderModels()" type="button">
                       <i class="fa-solid fa-arrows-rotate"></i> 获取模型
                     </button>
                   </div>
-                  <datalist id="hades-api-model-list">
-                    ${modelOptions(selectedProvider, profile.model || "")}
-                  </datalist>
                   <small class="hades-field-help">会按当前 API 类型读取可用模型；如果接口不允许浏览器读取，会使用内置推荐列表。</small>
                 </div>
               </div>
