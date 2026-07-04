@@ -71,6 +71,7 @@
 
   function setModelChoices(models, options = {}) {
     const keepCurrent = Boolean(options.keepCurrent);
+    const selectFirst = Boolean(options.selectFirst);
     const modelSelect = document.getElementById("hades-api-model");
     const current = String(modelSelect?.value || "").trim();
     const provider = document.getElementById("hades-api-provider")?.value || "";
@@ -80,7 +81,9 @@
       modelSelect.innerHTML = [`<option value=""></option>`, ...values.map((value) => `<option value="${esc(value)}">${esc(value)}</option>`)].join("");
     }
     if (modelSelect) {
-      modelSelect.value = keepCurrent && current && values.includes(current) ? current : "";
+      if (keepCurrent && current && values.includes(current)) modelSelect.value = current;
+      else if (selectFirst && values.length) modelSelect.value = values[0];
+      else modelSelect.value = "";
     }
     return values;
   }
@@ -282,7 +285,7 @@
 
     const plan = modelFetchPlan(provider, url, key);
     if (!plan.url) {
-      setModelChoices(fallback);
+      setModelChoices(fallback, { selectFirst: true });
       notify("当前 API 类型暂不支持在线获取模型，已显示内置推荐模型。", "warning");
       return;
     }
@@ -297,10 +300,10 @@
       const payload = await response.json();
       const models = readModelsFromPayload(payload, provider);
       if (!models.length) throw new Error("没有读取到模型列表");
-      setModelChoices(models, { keepCurrent: true });
+      setModelChoices(models, { selectFirst: true });
       notify(`已获取 ${models.length} 个模型`);
     } catch (error) {
-      setModelChoices(fallback);
+      setModelChoices(fallback, { selectFirst: true });
       console.warn("[HADES Config Panel] model fetch failed:", error);
       notify("在线获取模型失败，已显示内置推荐模型。部分官方接口会阻止浏览器直接读取模型列表。", "warning");
     } finally {
