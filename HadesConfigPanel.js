@@ -46,17 +46,20 @@
     }).join("");
   }
 
+  function shouldKeepSavedModel(providerId, model) {
+    const value = String(model || "").trim();
+    if (!value) return false;
+    if ((providerId === "openai" || providerId === "chatgpt") && value === "gpt-5.5") return false;
+    return true;
+  }
+
   function modelOptions(providerId, currentModel) {
-    const provider = getProviders()[providerId] || {};
     const saved = String(currentModel || "").trim();
-    const models = Array.isArray(provider.models) ? provider.models : [];
-    const values = models
-      .map((model) => model?.value)
-      .filter(Boolean);
-    if (saved && !values.includes(saved)) values.unshift(saved);
-    return values
-      .map((value) => `<option value="${esc(value)}" ${value === saved ? "selected" : ""}>${esc(value)}</option>`)
-      .join("");
+    const values = shouldKeepSavedModel(providerId, saved) ? [saved] : [];
+    return [
+      `<option value="" selected></option>`,
+      ...values.map((value) => `<option value="${esc(value)}">${esc(value)}</option>`),
+    ].join("");
   }
 
   function modelValues(providerId) {
@@ -70,13 +73,14 @@
     const keepCurrent = Boolean(options.keepCurrent);
     const modelSelect = document.getElementById("hades-api-model");
     const current = String(modelSelect?.value || "").trim();
-    const values = [...new Set((models || []).map((model) => String(model || "").trim()).filter(Boolean))];
-    if (keepCurrent && current && !values.includes(current)) values.unshift(current);
+    const provider = document.getElementById("hades-api-provider")?.value || "";
+    const values = [...new Set((models || []).map((model) => String(model || "").trim()).filter((model) => shouldKeepSavedModel(provider, model)))];
+    if (keepCurrent && shouldKeepSavedModel(provider, current) && !values.includes(current)) values.unshift(current);
     if (modelSelect) {
-      modelSelect.innerHTML = values.map((value) => `<option value="${esc(value)}">${esc(value)}</option>`).join("");
+      modelSelect.innerHTML = [`<option value=""></option>`, ...values.map((value) => `<option value="${esc(value)}">${esc(value)}</option>`)].join("");
     }
-    if (modelSelect && values.length) {
-      modelSelect.value = keepCurrent && current && values.includes(current) ? current : values[0];
+    if (modelSelect) {
+      modelSelect.value = keepCurrent && current && values.includes(current) ? current : "";
     }
     return values;
   }
@@ -257,9 +261,7 @@
       el.style.display = !checked && needsUrl ? "" : "none";
     });
 
-    const values = setModelChoices(currentProviderModels(provider));
-    const modelInput = document.getElementById("hades-api-model");
-    if (modelInput && values.length) modelInput.value = values[0];
+    setModelChoices(currentProviderModels(provider));
   }
 
   async function fetchProviderModels() {
@@ -320,6 +322,13 @@
     const provider = document.getElementById("hades-api-provider")?.value || "chatgpt";
     const temperature = parseFloat(document.getElementById("hades-api-temperature")?.value) || 0.8;
     const maxTokens = parseInt(document.getElementById("hades-api-tokens")?.value, 10) || 4000;
+    const selectedModel = document.getElementById("hades-api-model")?.value.trim() || "";
+
+    if (!useMainApi && !selectedModel) {
+      notify("请先点击获取模型并选择模型名称。", "error");
+      return;
+    }
+
     const nextProfile = useMainApi
       ? {
           provider: "sillytavern",
@@ -333,7 +342,7 @@
           provider,
           url: provider === "openai" ? (document.getElementById("hades-api-url")?.value.trim() || "") : "",
           key: document.getElementById("hades-api-key")?.value.trim() || "",
-          model: document.getElementById("hades-api-model")?.value.trim() || "",
+          model: selectedModel,
           temperature,
           max_tokens: maxTokens,
         };

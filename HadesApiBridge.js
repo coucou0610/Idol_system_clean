@@ -28,11 +28,11 @@
     openai: {
       label: "OpenAI",
       needsUrl: true,
-      models: [{ value: "gpt-5.5" }, { value: "gpt-5.4" }, { value: "gpt-5.4-mini" }, { value: "gpt-5.4-nano" }, { value: "gpt-4o" }, { value: "gpt-4o-mini" }],
+      models: [{ value: "gpt-5.4-mini" }, { value: "gpt-5.4" }, { value: "gpt-5.4-nano" }, { value: "gpt-4o" }, { value: "gpt-4o-mini" }],
     },
     chatgpt: {
       label: "ChatGPT",
-      models: [{ value: "gpt-5.5" }, { value: "gpt-5.4" }, { value: "gpt-5.4-mini" }, { value: "gpt-5.4-nano" }, { value: "gpt-4o" }, { value: "gpt-4o-mini" }],
+      models: [{ value: "gpt-5.4-mini" }, { value: "gpt-5.4" }, { value: "gpt-5.4-nano" }, { value: "gpt-4o" }, { value: "gpt-4o-mini" }],
     },
     gemini: {
       label: "Gemini",
