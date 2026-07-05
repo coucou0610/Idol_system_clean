@@ -109,6 +109,131 @@
         });
     }
 
+    const HADES_CONTENT_JOBS = Object.freeze({
+        contracts: {
+            moduleName: "Contracts",
+            tag: "contracts",
+            buttonId: "contracts-generate-btn",
+            loadingId: "contracts-loading",
+            readyHtml: '<i class="fa-solid fa-wand-magic-sparkles"></i> 生成通告',
+            doneText: "通告已生成并显示在面板中",
+            requiredElementIds: ["cte-agency-list-container"],
+            beforeRun() {
+                const state = window.CTEIdolManager.RPG?.state || {};
+                const statText = [
+                    ["歌艺", state.vocal],
+                    ["舞蹈", state.dance],
+                    ["演技", state.acting],
+                    ["魅力", state.charm],
+                    ["气质", state.grace],
+                    ["体能", state.stamina],
+                ].map(([label, value]) => `${label}${value || 0}`).join("，");
+                const prompt = [
+                    `当前艺人属性：${statText}。`,
+                    "难度分配：1-2条属性要求低于当前数值（可接取），其余通告略高于当前水平（有挑战性）。",
+                    "所有项目名、公司、剧情必须完全原创，禁止照搬或重复任何示例内容。",
+                    "请严格按格式生成通告列表，每条必须包含全部10个字段，直接输出<contracts>标签，不要任何前言。",
+                ].join("");
+                window.HadesApiBridge?.setHadesPromptOverride?.("contracts", prompt);
+            },
+        },
+        shop: {
+            moduleName: "Shop",
+            tag: "shop",
+            buttonId: "shop-generate-btn",
+            loadingId: "shop-loading",
+            readyHtml: '<i class="fa-solid fa-wand-magic-sparkles"></i> 刷新商品',
+            doneText: "商品已生成并显示在面板中",
+        },
+        news: {
+            moduleName: "News",
+            tag: "news",
+            buttonId: "news-generate-btn",
+            loadingId: "news-loading",
+            readyHtml: '<i class="fa-solid fa-wand-magic-sparkles"></i> 生成日报',
+            doneText: "日报已生成并显示在面板中",
+        },
+    });
+
+    function generationControlsFor(job) {
+        const controls = {
+            button: document.getElementById(job.buttonId),
+            loading: document.getElementById(job.loadingId),
+        };
+        const missingRequired = (job.requiredElementIds || [])
+            .some((id) => !document.getElementById(id));
+        return controls.button && controls.loading && !missingRequired ? controls : null;
+    }
+
+    function setGenerationControls(controls, job, isRunning) {
+        controls.button.disabled = isRunning;
+        controls.button.innerHTML = isRunning
+            ? '<i class="fa-solid fa-spinner fa-spin"></i> 生成中...'
+            : job.readyHtml;
+        controls.loading.style.display = isRunning ? "block" : "none";
+    }
+
+    function wrapHadesPayload(job, rawContent) {
+        const text = String(rawContent || "");
+        const tagPattern = new RegExp(`<${job.tag}\\b[\\s\\S]*?<\\/${job.tag}>`, "i");
+        if (tagPattern.test(text)) {
+            console.info(`[${job.moduleName}] AI返回内容已包含<${job.tag}>标签，直接使用`);
+            return text;
+        }
+
+        console.info(`[${job.moduleName}] AI返回内容不包含<${job.tag}>标签，手动添加`);
+        return `<${job.tag}>\n${text}\n</${job.tag}>`;
+    }
+
+    function refreshGeneratedWorkbench(moduleApi, job, wrappedContent) {
+        console.info(`[${job.moduleName}] 生成成功，准备刷新视图`);
+        console.info(`[${job.moduleName}] 内容长度:`, wrappedContent.length);
+        console.info(`[${job.moduleName}] 内容预览:`, wrappedContent.substring(0, 200));
+
+        moduleApi._lastGeneratedContent = wrappedContent;
+        moduleApi.saveToStorage?.();
+
+        setTimeout(() => {
+            const container = document.getElementById("cte-idol-rpg-content-area");
+            if (container) {
+                console.info(`[${job.moduleName}] 找到容器，开始刷新视图`);
+                moduleApi.renderView(container);
+            } else {
+                console.error(`[${job.moduleName}] 未找到容器 cte-idol-rpg-content-area`);
+            }
+        }, 100);
+    }
+
+    async function runHadesContentJob(moduleApi, jobKey) {
+        const job = HADES_CONTENT_JOBS[jobKey];
+        const controls = job ? generationControlsFor(job) : null;
+        if (!job || !controls) return;
+
+        setGenerationControls(controls, job, true);
+        try {
+            const bridge = window.HadesApiBridge;
+            if (typeof bridge?.runHadesGeneration !== "function") {
+                throw new Error("独立 API 模块尚未加载。");
+            }
+
+            await job.beforeRun?.(moduleApi);
+            const result = await bridge.runHadesGeneration(jobKey);
+            if (!result?.success) {
+                alert("生成失败: " + (result?.error || "未知错误"));
+                return;
+            }
+
+            const wrappedContent = wrapHadesPayload(job, result.content);
+            refreshGeneratedWorkbench(moduleApi, job, wrappedContent);
+            console.info(`[${job.moduleName}] ${job.doneText}`);
+        } catch (error) {
+            console.error(`[${job.moduleName}] 生成失败:`, error);
+            alert("生成失败: " + (error?.message || "未知错误"));
+        } finally {
+            setGenerationControls(controls, job, false);
+        }
+    }
+
     async function ensureMusicModuleLoaded() {
         if (window.STMusic?.sharedApiNoSettings && window.STMusic?.init && window.STMusic?.togglePanel) return true;
         const timestamp = Date.now();
@@ -854,93 +979,7 @@
 
         // 生成通告
         generateContracts: async function () {
-            const btn = document.getElementById("contracts-generate-btn");
-            const loading = document.getElementById("contracts-loading");
-            const listContainer = document.getElementById(
-                "cte-agency-list-container",
-            );
-
-            if (!btn || !loading || !listContainer) return;
-
-            btn.disabled = true;
-            btn.innerHTML =
-                '<i class="fa-solid fa-spinner fa-spin"></i> 生成中...';
-            loading.style.display = "block";
-
-            try {
-                // 属性情報をuserPromptに注入
-                const state = window.CTEIdolManager.RPG.state;
-                const attrInfo = `当前艺人属性：歌艺${state.vocal||0}，舞蹈${state.dance||0}，演技${state.acting||0}，魅力${state.charm||0}，气质${state.grace||0}，体能${state.stamina||0}。难度分配：1-2条属性要求低于当前数值（可接取），其余通告略高于当前水平（有挑战性）。所有项目名、公司、剧情必须完全原创，禁止照搬或重复任何示例内容。`;
-                if (window.HadesApiBridge?.setHadesPromptOverride) {
-                    window.HadesApiBridge.setHadesPromptOverride("contracts", attrInfo + "请严格按格式生成通告列表，每条必须包含全部10个字段，直接输出<contracts>标签，不要任何前言。");
-                }
-
-                const result =
-                    await window.HadesApiBridge.runHadesGeneration("contracts");
-
-                if (!result.success) {
-                    alert("生成失败: " + (result.error || "未知错误"));
-                    return;
-                }
-
-                // [FIX] 检查AI返回的内容是否已经包含<contracts>标签
-                let wrappedContent;
-                if (result.content.includes("<contracts>")) {
-                    // AI已经包含了标签，直接使用
-                    wrappedContent = result.content;
-                    console.info(
-                        "[Contracts] AI返回内容已包含<contracts>标签，直接使用",
-                    );
-                } else {
-                    // AI没有包含标签，手动添加
-                    wrappedContent = `<contracts>\n${result.content}\n</contracts>`;
-                    console.info(
-                        "[Contracts] AI返回内容不包含<contracts>标签，手动添加",
-                    );
-                }
-
-                // 不发送到聊天，避免触发其他插件（如3手机论坛监听器）
-                // 直接将内容存储并刷新视图
-                console.info("[Contracts] 生成成功，准备刷新视图");
-                console.info("[Contracts] 内容长度:", wrappedContent.length);
-                console.info(
-                    "[Contracts] 内容预览:",
-                    wrappedContent.substring(0, 200),
-                );
-
-                // 将生成的内容临时存储
-                this._lastGeneratedContent = wrappedContent;
-
-                // [NEW] 保存到 localStorage
-                this.saveToStorage();
-
-                // 直接刷新视图 - 查找正确的容器
-                setTimeout(() => {
-                    // 通告视图在 cte-idol-rpg-content-area 中
-                    const container = document.getElementById(
-                        "cte-idol-rpg-content-area",
-                    );
-                    if (container) {
-                        console.info("[Contracts] 找到容器，开始刷新视图");
-                        this.renderView(container);
-                    } else {
-                        console.error(
-                            "[Contracts] 未找到容器 cte-idol-rpg-content-area",
-                        );
-                    }
-                }, 100);
-
-                // 提示用户
-                console.info("[Contracts] 通告已生成并显示在面板中");
-            } catch (error) {
-                console.error("[Contracts] 生成失败:", error);
-                alert("生成失败: " + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML =
-                    '<i class="fa-solid fa-wand-magic-sparkles"></i> 生成通告';
-                loading.style.display = "none";
-            }
+            return runHadesContentJob(this, "contracts");
         },
 
         filter: function (category, btnElement) {
@@ -1683,75 +1722,7 @@
 
         // 生成商店
         generateShop: async function () {
-            const btn = document.getElementById("shop-generate-btn");
-            const loading = document.getElementById("shop-loading");
-
-            if (!btn || !loading) return;
-
-            btn.disabled = true;
-            btn.innerHTML =
-                '<i class="fa-solid fa-spinner fa-spin"></i> 生成中...';
-            loading.style.display = "block";
-
-            try {
-                const result = await window.HadesApiBridge.runHadesGeneration("shop");
-
-                if (!result.success) {
-                    alert("生成失败: " + (result.error || "未知错误"));
-                    return;
-                }
-
-                // [FIX] 检查AI返回的内容是否已经包含<shop>标签
-                let wrappedContent;
-                if (result.content.includes("<shop>")) {
-                    wrappedContent = result.content;
-                    console.info("[Shop] AI返回内容已包含<shop>标签，直接使用");
-                } else {
-                    wrappedContent = `<shop>\n${result.content}\n</shop>`;
-                    console.info("[Shop] AI返回内容不包含<shop>标签，手动添加");
-                }
-
-                // 不发送到聊天，避免触发其他插件（如3手机论坛监听器）
-                // 直接将内容存储并刷新视图
-                console.info("[Shop] 生成成功，准备刷新视图");
-                console.info("[Shop] 内容长度:", wrappedContent.length);
-                console.info(
-                    "[Shop] 内容预览:",
-                    wrappedContent.substring(0, 200),
-                );
-
-                // 将生成的内容临时存储
-                this._lastGeneratedContent = wrappedContent;
-
-                // [NEW] 保存到 localStorage
-                this.saveToStorage();
-
-                // 直接刷新视图
-                setTimeout(() => {
-                    const container = document.getElementById(
-                        "cte-idol-rpg-content-area",
-                    );
-                    if (container) {
-                        console.info("[Shop] 找到容器，开始刷新视图");
-                        this.renderView(container);
-                    } else {
-                        console.error(
-                            "[Shop] 未找到容器 cte-idol-rpg-content-area",
-                        );
-                    }
-                }, 100);
-
-                // 提示用户
-                console.info("[Shop] 商品已生成并显示在面板中");
-            } catch (error) {
-                console.error("[Shop] 生成失败:", error);
-                alert("生成失败: " + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML =
-                    '<i class="fa-solid fa-wand-magic-sparkles"></i> 刷新商品';
-                loading.style.display = "none";
-            }
+            return runHadesContentJob(this, "shop");
         },
 
         // Helper to generate the tab HTML structure with mobile toggle buttons
@@ -2782,75 +2753,7 @@
 
         // 生成日报
         generateNews: async function () {
-            const btn = document.getElementById("news-generate-btn");
-            const loading = document.getElementById("news-loading");
-
-            if (!btn || !loading) return;
-
-            btn.disabled = true;
-            btn.innerHTML =
-                '<i class="fa-solid fa-spinner fa-spin"></i> 生成中...';
-            loading.style.display = "block";
-
-            try {
-                const result = await window.HadesApiBridge.runHadesGeneration("news");
-
-                if (!result.success) {
-                    alert("生成失败: " + (result.error || "未知错误"));
-                    return;
-                }
-
-                // [FIX] 检查AI返回的内容是否已经包含<news>标签
-                let wrappedContent;
-                if (result.content.includes("<news>")) {
-                    wrappedContent = result.content;
-                    console.info("[News] AI返回内容已包含<news>标签，直接使用");
-                } else {
-                    wrappedContent = `<news>\n${result.content}\n</news>`;
-                    console.info("[News] AI返回内容不包含<news>标签，手动添加");
-                }
-
-                // 不发送到聊天，避免触发其他插件（如3手机论坛监听器）
-                // 直接将内容存储并刷新视图
-                console.info("[News] 生成成功，准备刷新视图");
-                console.info("[News] 内容长度:", wrappedContent.length);
-                console.info(
-                    "[News] 内容预览:",
-                    wrappedContent.substring(0, 200),
-                );
-
-                // 将生成的内容临时存储
-                this._lastGeneratedContent = wrappedContent;
-
-                // [NEW] 保存到 localStorage
-                this.saveToStorage();
-
-                // 直接刷新视图
-                setTimeout(() => {
-                    const container = document.getElementById(
-                        "cte-idol-rpg-content-area",
-                    );
-                    if (container) {
-                        console.info("[News] 找到容器，开始刷新视图");
-                        this.renderView(container);
-                    } else {
-                        console.error(
-                            "[News] 未找到容器 cte-idol-rpg-content-area",
-                        );
-                    }
-                }, 100);
-
-                // 提示用户
-                console.info("[News] 日报已生成并显示在面板中");
-            } catch (error) {
-                console.error("[News] 生成失败:", error);
-                alert("生成失败: " + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML =
-                    '<i class="fa-solid fa-wand-magic-sparkles"></i> 生成日报';
-                loading.style.display = "none";
-            }
+            return runHadesContentJob(this, "news");
         },
     };
 
