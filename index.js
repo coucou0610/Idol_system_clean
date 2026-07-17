@@ -3392,7 +3392,7 @@
             row.querySelector(".cte-idol-weekly-exec-text").textContent = item.text;
             row.onclick = function () {
                 window.CTEIdolManager.closeAllPopups();
-                window.CTEIdolManager.openParticipantSelection(`${item.day}：${item.text}`);
+                window.CTEIdolManager.openParticipantSelection(item.text);
             };
             list.appendChild(row);
         });
@@ -3461,7 +3461,7 @@
         const weeklyContainer = document.getElementById("cte-idol-weekly-container");
         const weeklyList = document.getElementById("cte-idol-weekly-list");
         if (scheduleMatch && weeklyList) {
-            const days = ["周一","周二","周三","周四","周五","周六","周日"];
+            const days = ["第1日","第2日","第3日","第4日","第5日","第6日","第7日"];
             const parts = scheduleMatch[1].split("|");
             window.CTEIdolManager.weeklyScheduleItems = days.map((day, i) => ({
                 day,

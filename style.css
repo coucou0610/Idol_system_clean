@@ -5092,3 +5092,93 @@
     background: #6f542d !important;
     border-radius: 0 !important;
 }
+
+/* Final contrast pass for agency/shop modules on the HADES skin. */
+#cte-idol-map-panel .cte-agency-scope,
+#cte-idol-map-panel .cte-shop-scope,
+#cte-idol-map-panel .cte-shop-scope.cte-agency-container {
+    --cte-agency-bg-body: #17110d !important;
+    --cte-agency-bg-card: #21170f !important;
+    --cte-agency-text-primary: #f0d48a !important;
+    --cte-agency-text-secondary: #c2a16b !important;
+    --cte-agency-text-muted: #88765e !important;
+    --cte-agency-bg-tag: #2f2117 !important;
+    --cte-agency-line-color: rgba(214, 170, 91, 0.28) !important;
+    --cte-shop-bg-card: #21170f !important;
+    --cte-shop-text-primary: #f0d48a !important;
+    --cte-shop-text-secondary: #c2a16b !important;
+    --cte-shop-text-muted: #88765e !important;
+    --cte-shop-line-color: rgba(214, 170, 91, 0.28) !important;
+}
+
+#cte-idol-map-panel .cte-agency-card,
+#cte-idol-map-panel .cte-shop-card {
+    background: #21170f !important;
+    color: #f0d48a !important;
+    border: 1px solid rgba(214, 170, 91, 0.28) !important;
+}
+
+#cte-idol-map-panel .cte-agency-header,
+#cte-idol-map-panel .cte-shop-header {
+    border-bottom-color: #e8cf91 !important;
+}
+
+#cte-idol-map-panel .cte-agency-header h1,
+#cte-idol-map-panel .cte-shop-header h1,
+#cte-idol-map-panel .cte-shop-title h1 {
+    color: #f0d48a !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45) !important;
+}
+
+#cte-idol-map-panel .cte-agency-meta,
+#cte-idol-map-panel .cte-shop-meta,
+#cte-idol-map-panel .cte-agency-empty,
+#cte-idol-map-panel .cte-shop-empty,
+#cte-idol-map-panel .cte-agency-resource-bar,
+#cte-idol-map-panel .cte-shop-stock,
+#cte-idol-map-panel .cte-shop-desc,
+#cte-idol-map-panel .cte-shop-effect {
+    color: #bda077 !important;
+}
+
+#cte-idol-map-panel .cte-agency-stats-bar,
+#cte-idol-map-panel .cte-agency-resource-bar,
+#cte-idol-map-panel .cte-shop-tabs,
+#cte-idol-map-panel .cte-shop-item,
+#cte-idol-map-panel .cte-agency-item,
+#cte-idol-map-panel .cte-shop-modal-box {
+    background: #261b12 !important;
+    border-color: rgba(214, 170, 91, 0.28) !important;
+    color: #d8c29a !important;
+}
+
+#cte-idol-map-panel .cte-agency-tab-btn,
+#cte-idol-map-panel .cte-shop-tab-btn {
+    background: #21170f !important;
+    border-color: rgba(214, 170, 91, 0.45) !important;
+    color: #d8c29a !important;
+}
+
+#cte-idol-map-panel .cte-agency-tab-btn.active,
+#cte-idol-map-panel .cte-shop-tab-btn.active,
+#cte-idol-map-panel .cte-shop-buy-btn,
+#cte-idol-map-panel .cte-shop-confirm-btn {
+    background: #e8cf91 !important;
+    border-color: #e8cf91 !important;
+    color: #17110d !important;
+}
+
+#cte-idol-map-panel .cte-agency-tab-btn:hover:not(.active),
+#cte-idol-map-panel .cte-shop-tab-btn:hover:not(.active) {
+    background: rgba(232, 207, 145, 0.14) !important;
+    color: #f0d48a !important;
+}
+
+#cte-idol-map-panel .cte-shop-name,
+#cte-idol-map-panel .cte-shop-price,
+#cte-idol-map-panel .cte-item-compact-title h3,
+#cte-idol-map-panel .cte-item-compact-title,
+#cte-idol-map-panel .cte-agency-stat-val,
+#cte-idol-map-panel .cte-agency-res-val {
+    color: #f0d48a !important;
+}
