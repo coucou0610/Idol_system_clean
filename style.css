@@ -4901,3 +4901,194 @@
         justify-content: flex-start;
     }
 }
+
+/* ================================================
+   HADES dark brown / gold global skin
+   Keeps Idol System views visually aligned with HADES SOUND ATELIER.
+   ================================================ */
+#cte-idol-map-panel,
+#cte-idol-map-panel.cte-theme-light,
+#cte-idol-map-panel.cte-theme-dark {
+    --cte-bg-panel: #17110d;
+    --cte-bg-header: #21170f;
+    --cte-bg-content: #17110d;
+    --cte-bg-sidebar: #0f0e0d;
+    --cte-bg-hud: #21170f;
+    --cte-border-main: #8f6b36;
+    --cte-border-subtle: rgba(214, 170, 91, 0.22);
+    --cte-border-header: rgba(214, 170, 91, 0.45);
+    --cte-text-primary: #e8cf91;
+    --cte-text-secondary: #b79a68;
+    --cte-text-nav: #9b8872;
+    --cte-text-nav-active: #e8cf91;
+    --cte-text-logo: #e8cf91;
+    --cte-text-hud: #d6aa5b;
+    --cte-accent: #d6aa5b;
+    --cte-accent-gold: #d6aa5b;
+    --cte-accent-gold-glow: rgba(214, 170, 91, 0.2);
+    --cte-nav-active-border: #d6aa5b;
+    --cte-sidebar-icon: #9b8872;
+    --cte-sidebar-icon-active: #e8cf91;
+    --cte-sidebar-icon-bg: rgba(214, 170, 91, 0.12);
+    --cte-shadow: 0 0 48px rgba(0, 0, 0, 0.72);
+}
+
+#cte-idol-map-panel {
+    background: #17110d !important;
+    border-color: rgba(214, 170, 91, 0.55) !important;
+    color: #e8cf91 !important;
+}
+
+#cte-idol-map-panel .cte-idol-panel-header,
+#cte-idol-map-panel .cte-idol-header {
+    background: #21170f !important;
+    border-color: rgba(214, 170, 91, 0.5) !important;
+    color: #e8cf91 !important;
+}
+
+#cte-idol-content-area,
+#cte-idol-map-panel .cte-idol-view,
+#cte-idol-map-panel .cte-idol-wrapper {
+    background: #17110d !important;
+    color: #e8cf91 !important;
+}
+
+#cte-idol-map-panel .cte-idol-wrapper h1,
+#cte-idol-map-panel .cte-idol-wrapper h2,
+#cte-idol-map-panel .cte-idol-wrapper h3 {
+    color: #e8cf91 !important;
+    border-color: rgba(214, 170, 91, 0.42) !important;
+}
+
+#cte-idol-map-panel .cte-idol-controls-bar {
+    background: #21170f !important;
+    border: 1px solid rgba(214, 170, 91, 0.28) !important;
+}
+
+#cte-idol-map-panel .cte-idol-btn,
+#cte-idol-map-panel .cte-idol-exec-btn,
+#cte-idol-map-panel .cte-idol-weekly-exec-btn {
+    background: rgba(214, 170, 91, 0.12) !important;
+    border: 1px solid rgba(214, 170, 91, 0.55) !important;
+    color: #e8cf91 !important;
+    border-radius: 2px !important;
+}
+
+#cte-idol-map-panel .cte-idol-btn:hover,
+#cte-idol-map-panel .cte-idol-exec-btn:hover,
+#cte-idol-map-panel .cte-idol-weekly-exec-btn:hover {
+    background: #d6aa5b !important;
+    color: #17110d !important;
+}
+
+#cte-idol-map-panel .cte-idol-notice-panel-row > div,
+#cte-idol-map-panel #cte-idol-notices-list > div,
+#cte-idol-map-panel #cte-idol-weekly-list > div,
+#cte-idol-map-panel .cte-idol-timeline-content {
+    background: #261b12 !important;
+    border-color: rgba(214, 170, 91, 0.24) !important;
+    color: #d8c29a !important;
+}
+
+#cte-idol-map-panel #cte-idol-notices-list *,
+#cte-idol-map-panel #cte-idol-weekly-list *,
+#cte-idol-map-panel .cte-idol-timeline-content * {
+    color: inherit;
+}
+
+#cte-idol-map-panel #cte-idol-notices-list div[style*="font-weight"],
+#cte-idol-map-panel #cte-idol-weekly-list span:last-child,
+#cte-idol-map-panel .cte-idol-schedule-title {
+    color: #e8cf91 !important;
+}
+
+#cte-idol-map-panel .cte-idol-timeline-time {
+    background: #0f0e0d !important;
+    border-color: #8f6b36 !important;
+    color: #e8cf91 !important;
+}
+
+#cte-idol-map-panel .cte-idol-timeline-item::before {
+    background-color: rgba(214, 170, 91, 0.18) !important;
+    border-left-color: rgba(214, 170, 91, 0.5) !important;
+}
+
+#cte-idol-map-panel .cte-idol-popup,
+#cte-idol-map-panel .cte-agency-modal-box,
+#cte-idol-map-panel #cte-idol-travel-menu-overlay .cte-idol-travel-menu-box {
+    background: #21170f !important;
+    border: 1px solid rgba(214, 170, 91, 0.5) !important;
+    color: #e8cf91 !important;
+}
+
+#cte-idol-map-panel input,
+#cte-idol-map-panel select,
+#cte-idol-map-panel textarea,
+#cte-idol-map-panel .cte-idol-travel-input {
+    background: #2d2016 !important;
+    border-color: rgba(214, 170, 91, 0.38) !important;
+    color: #e8cf91 !important;
+}
+
+#cte-idol-map-panel input::placeholder,
+#cte-idol-map-panel textarea::placeholder {
+    color: rgba(232, 207, 145, 0.52) !important;
+}
+
+#cte-idol-map-panel .cte-agency-container,
+#cte-idol-map-panel .cte-shop-scope,
+#cte-idol-map-panel .cte-news-scope,
+#cte-idol-map-panel .cte-memo-scope {
+    --cte-agency-bg-card: #17110d;
+    --cte-agency-text-primary: #e8cf91;
+    --cte-agency-text-secondary: #b79a68;
+    --cte-shop-bg-card: #17110d;
+    --cte-shop-text-primary: #e8cf91;
+    --cte-shop-text-secondary: #b79a68;
+    --cte-news-bg-card: #17110d;
+    --cte-news-text-primary: #e8cf91;
+    --cte-news-text-secondary: #b79a68;
+    --cte-news-text-muted: #88765e;
+    --cte-news-line-color: rgba(214, 170, 91, 0.24);
+    --cte-memo-bg-card: #17110d;
+    --cte-memo-text-primary: #e8cf91;
+    --cte-memo-text-secondary: #b79a68;
+    background: #17110d !important;
+    color: #e8cf91 !important;
+}
+
+#cte-idol-map-panel .cte-agency-container > div,
+#cte-idol-map-panel .cte-shop-scope > div,
+#cte-idol-map-panel .cte-news-scope .archive-card,
+#cte-idol-map-panel .cte-memo-scope > div,
+#cte-idol-map-panel .cte-agency-item,
+#cte-idol-map-panel .cte-shop-item,
+#cte-idol-map-panel .cte-archive-card,
+#cte-idol-map-panel .news-card {
+    background: #21170f !important;
+    border-color: rgba(214, 170, 91, 0.24) !important;
+    color: #d8c29a !important;
+    box-shadow: none !important;
+}
+
+#cte-idol-map-panel .cte-news-scope .sentiment-bar,
+#cte-idol-map-panel .cte-news-scope .news-grid-3col,
+#cte-idol-map-panel .cte-memo-summary,
+#cte-idol-map-panel .cte-shop-tabs,
+#cte-idol-map-panel .cte-agency-stats-bar {
+    background: #261b12 !important;
+    border-color: rgba(214, 170, 91, 0.22) !important;
+}
+
+#cte-idol-map-panel .cte-news-scope .header-section {
+    border-color: rgba(214, 170, 91, 0.58) !important;
+}
+
+#cte-idol-map-panel ::-webkit-scrollbar-track {
+    background: #17110d !important;
+}
+
+#cte-idol-map-panel ::-webkit-scrollbar-thumb {
+    background: #6f542d !important;
+    border-radius: 0 !important;
+}
