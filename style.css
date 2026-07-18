@@ -5182,3 +5182,135 @@
 #cte-idol-map-panel .cte-agency-res-val {
     color: #f0d48a !important;
 }
+
+/* HADES final tone unification: agency, shop and news detail surfaces. */
+#cte-idol-map-panel .cte-agency-scope,
+#cte-idol-map-panel .cte-shop-scope,
+#cte-idol-map-panel .cte-news-scope {
+    --cte-agency-accent-red: #d98476 !important;
+    --cte-agency-accent-blue: #8fb6d9 !important;
+    --cte-agency-accent-gold: #e8cf91 !important;
+    --cte-agency-accent-purple: #c9a2df !important;
+    --cte-agency-accent-green: #9fc39a !important;
+    --cte-agency-bg-tag: #332317 !important;
+    --cte-shop-col-fashion: #c9a2df !important;
+    --cte-shop-col-gear: #8fb6d9 !important;
+    --cte-shop-col-living: #d8c29a !important;
+    --cte-shop-col-food: #9fc39a !important;
+    --cte-shop-col-gift: #e09a8d !important;
+    --cte-shop-col-travel: #9ec7c1 !important;
+    --cte-shop-col-marketing: #e8b66f !important;
+    --cte-shop-col-training: #aeb9e8 !important;
+    --cte-shop-col-staff: #d8b08a !important;
+    --cte-shop-col-fan: #e5a3be !important;
+    --cte-shop-col-invest: #e8cf91 !important;
+    --cte-shop-col-vehicle: #9fb7bf !important;
+    --cte-news-accent-red: #d98476 !important;
+    --cte-news-accent-blue: #8fb6d9 !important;
+    --cte-news-accent-dark: #e8cf91 !important;
+    --cte-news-accent-gold: #e8cf91 !important;
+    --cte-news-line-color: rgba(232, 207, 145, 0.28) !important;
+}
+
+#cte-idol-map-panel .cte-item-badge,
+#cte-idol-map-panel .cte-agency-item [class*="badge"],
+#cte-idol-map-panel .cte-shop-item [class*="tag"],
+#cte-idol-map-panel .cte-shop-item [class*="type"],
+#cte-idol-map-panel .cte-shop-type-brand,
+#cte-idol-map-panel .cte-news-scope .hl-tag,
+#cte-idol-map-panel .cte-news-scope .trend-tag,
+#cte-idol-map-panel .cte-news-scope .brief-type {
+    background: rgba(232, 207, 145, 0.14) !important;
+    border: 1px solid rgba(232, 207, 145, 0.42) !important;
+    color: #f0d48a !important;
+    text-shadow: none !important;
+}
+
+#cte-idol-map-panel .cte-badge-movie {
+    color: #b9d5ec !important;
+}
+
+#cte-idol-map-panel .cte-badge-music {
+    color: #f0b2a8 !important;
+}
+
+#cte-idol-map-panel .cte-badge-stage {
+    color: #dfc0f2 !important;
+}
+
+#cte-idol-map-panel .cte-badge-variety {
+    color: #c4dfba !important;
+}
+
+#cte-idol-map-panel .cte-badge-ad {
+    color: #f0d48a !important;
+}
+
+#cte-idol-map-panel .cte-item-compact-attrs,
+#cte-idol-map-panel .cte-item-req-grid,
+#cte-idol-map-panel .cte-shop-effect,
+#cte-idol-map-panel .cte-news-scope .impact-box {
+    background: rgba(232, 207, 145, 0.10) !important;
+    border: 1px solid rgba(232, 207, 145, 0.30) !important;
+    color: #d8c29a !important;
+}
+
+#cte-idol-map-panel .cte-item-compact-attrs *,
+#cte-idol-map-panel .cte-item-req-grid *,
+#cte-idol-map-panel .cte-shop-effect *,
+#cte-idol-map-panel .cte-news-scope .impact-box * {
+    color: inherit !important;
+}
+
+#cte-idol-map-panel .cte-item-req-val.danger {
+    color: #f0a091 !important;
+}
+
+#cte-idol-map-panel .cte-shop-img-placeholder {
+    background: #2d2016 !important;
+    border: 1px solid rgba(232, 207, 145, 0.22) !important;
+    color: rgba(232, 207, 145, 0.50) !important;
+}
+
+#cte-idol-map-panel .cte-shop-img-placeholder i,
+#cte-idol-map-panel .cte-shop-res-icon,
+#cte-idol-map-panel .cte-agency-res-icon,
+#cte-idol-map-panel .cte-agency-stat-item i {
+    color: rgba(232, 207, 145, 0.70) !important;
+}
+
+#cte-idol-map-panel .cte-news-scope .headline-card,
+#cte-idol-map-panel .cte-news-scope .brief-card,
+#cte-idol-map-panel .cte-news-scope .trending-item,
+#cte-idol-map-panel .cte-news-scope .news-sidebar {
+    background: #261b12 !important;
+    border-color: rgba(232, 207, 145, 0.30) !important;
+    color: #d8c29a !important;
+    box-shadow: none !important;
+}
+
+#cte-idol-map-panel .cte-news-scope .brief-card.rivalry {
+    border-left-color: #8fb6d9 !important;
+}
+
+#cte-idol-map-panel .cte-news-scope .hl-title,
+#cte-idol-map-panel .cte-news-scope .brief-title,
+#cte-idol-map-panel .cte-news-scope .trend-title,
+#cte-idol-map-panel .cte-news-scope .sidebar-title {
+    color: #f0d48a !important;
+}
+
+#cte-idol-map-panel .cte-news-scope .hl-summary,
+#cte-idol-map-panel .cte-news-scope .brief-text,
+#cte-idol-map-panel .cte-news-scope .trend-text,
+#cte-idol-map-panel .cte-news-scope .impact-text {
+    color: #cdb58a !important;
+}
+
+#cte-idol-map-panel .cte-news-scope .positive {
+    color: #f0a091 !important;
+}
+
+#cte-idol-map-panel .cte-news-scope .stable {
+    color: #8fb6d9 !important;
+}
